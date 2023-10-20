@@ -1,0 +1,30 @@
+{
+  "name": "simple-comparator",
+  "version": "1.0.0",
+  "description": "The JS/TS utility to compare two simple objects, arrays or simple data type.",
+  "main": "dist_commonjs/index.js",
+  "types": "./index.ts",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/dominikj111/simple-comparator.git"
+  },
+  "keywords": [
+    "simple-object-comparator",
+    "array-comparator",
+    "comparator",
+    "Deno",
+    "Node",
+    "Javascript",
+    "Typescript",
+    "utilities"
+  ],
+  "author": "dominikj111",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/dominikj111/simple-comparator/issues"
+  },
+  "homepage": "https://github.com/dominikj111/simple-comparator#readme"
+}
