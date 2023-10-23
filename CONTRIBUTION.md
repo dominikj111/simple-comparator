@@ -1,4 +1,4 @@
-# Contributing to **module-state**
+# Contributing to **simple-comparator**
 
 Thank you for your interest in contributing to this repository! Before you do, please make an issue to discuss your proposal.
 
