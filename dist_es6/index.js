@@ -1,2 +1,2 @@
-export { compare, same, different, } from "./src/comparator.js";
+export { compare, same, different, } from "./src/comparator";
 //# sourceMappingURL=index.js.map
