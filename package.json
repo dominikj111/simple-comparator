@@ -5,7 +5,8 @@
   "main": "dist_commonjs/index.js",
   "types": "./index.ts",
   "scripts": {
-    "test": "jest"
+    "build": "rm -rf dist_commonjs/* dist_es6/* && tsc --project tsconfig-commonjs.json && tsc --project tsconfig-es6.json",
+    "test": "jest && jest -c jest-node.config.json && deno test --config tsconfig-deno.json"
   },
   "repository": {
     "type": "git",
