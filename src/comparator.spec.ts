@@ -1,4 +1,4 @@
-import { compare, same, different } from "./comparator";
+import { compare, same, different, Comparable } from "./comparator";
 
 describe("`compare` function tests", () => {
 	it("Compares multi typed arrays", () => {
@@ -162,5 +162,57 @@ describe("`compare` function tests", () => {
 	it("Offers same and different functions to more evident calls", () => {
 		expect(same(1, 1)).toBeTruthy();
 		expect(different(1, 2)).toBeTruthy();
+	});
+
+	it("Should resolve to false when comparing Number and number", () => {
+		expect(compare(new Number(1), 1)).toBeFalsy();
+	});
+
+	it("Should resolve to false when comparing Boolean and boolean", () => {
+		expect(compare(new Boolean(1), true)).toBeFalsy();
+	});
+
+	it("Should resolve to false when comparing String and string", () => {
+		expect(compare(new String("test"), "test")).toBeFalsy();
+	});
+
+	it("Should resolve correctly when comparing Number and Number", () => {
+		expect(compare(new Number(1), new Number(1))).toBeTruthy();
+		expect(compare(new Number(1), new Number(2))).toBeFalsy();
+	});
+
+	it("Should resolve correctly when comparing Boolean and Boolean", () => {
+		expect(compare(new Boolean(1), new Boolean(1))).toBeTruthy();
+		expect(compare(new Boolean(1), new Boolean(0))).toBeFalsy();
+	});
+
+	it("Should resolve correctly true when comparing String and String", () => {
+		expect(compare(new String("test"), new String("test"))).toBeTruthy();
+		expect(compare(new String("test"), new String("test2"))).toBeFalsy();
+	});
+
+	it("Should resolve class objects implementing `Comparable` interface", () => {
+		class SomeClass implements Comparable<SomeClass> {
+			private test: string;
+
+			constructor(test: string) {
+				this.test = test;
+			}
+
+			public getTest() {
+				return this.test;
+			}
+
+			equals(_: SomeClass) {
+				return this.getTest() === _.getTest();
+			}
+		}
+
+		const someClass1 = new SomeClass("ab");
+		const someClass2 = new SomeClass("cd");
+		const someClass3 = new SomeClass("ab");
+
+		expect(compare(someClass1, someClass2)).toBe(false);
+		expect(compare(someClass1, someClass3)).toBe(true);
 	});
 });

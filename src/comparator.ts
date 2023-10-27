@@ -1,4 +1,49 @@
-function compareArrs<T>(a: T[], b: T[], ignore: string[] = [], include: string[] = []) {
+/**
+ * Options for `compare` function.
+ *
+ * topLevelIgnore - is an array of keys which should be ignored on top level of the provided object or top level of any provided object in an array.
+ * topLevelInclude - is an array of keys which should be compared each other on top level of the provided object or top level of any provided object in an array.
+ */
+export interface CompareOptions {
+	topLevelIgnore?: string[];
+	topLevelInclude?: string[];
+}
+
+/**
+ * Comparable interface for `compare` function.
+ * If class object passed to `compare` function, it should implement this interface.
+ */
+export interface Comparable<T> {
+	equals: (_: T) => boolean;
+}
+
+export type SimpleTypedVariable =
+	| string
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	| String
+	| boolean
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	| Boolean
+	| number
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	| Number
+	| null
+	| undefined
+	| bigint
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	| BigInt
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	| Comparable<any>;
+
+export type BasicCompareType = SimpleTypedVariable | SimpleTypedVariable[];
+
+export interface BasicCompareObject {
+	[key: string]: BasicCompareObject | BasicCompareType | (BasicCompareObject | BasicCompareType)[];
+}
+
+export type CompareType = BasicCompareObject | BasicCompareType | (BasicCompareObject | BasicCompareType)[];
+
+function compareArrs<T extends CompareType>(a: T[], b: T[], ignore: string[] = [], include: string[] = []) {
 	if (a.length !== b.length) {
 		return false;
 	}
@@ -10,12 +55,7 @@ function compareArrs<T>(a: T[], b: T[], ignore: string[] = [], include: string[]
 	return true;
 }
 
-function compareObjects(
-	a: Record<string, unknown>,
-	b: Record<string, unknown>,
-	ignore: string[] = [],
-	include: string[] = [],
-) {
+function compareObjects<T extends BasicCompareObject>(a: T, b: T, ignore: string[] = [], include: string[] = []) {
 	let keysA;
 	let keysB;
 
@@ -42,15 +82,17 @@ function compareObjects(
 	return true;
 }
 
-function internalCompare(a: unknown, b: unknown, ignore: string[] = [], include: string[] = []) {
+function internalCompare(a: CompareType, b: CompareType, ignore: string[] = [], include: string[] = []) {
 	const isSameType = typeof a === typeof b && Array.isArray(a) === Array.isArray(b);
 	if (!isSameType) {
 		return false;
 	}
+
 	const isSimpleType = ["string", "boolean", "undefined"].includes(typeof a);
 	if (isSimpleType || (a === null && b === null)) {
 		return a === b;
 	}
+
 	const isNumber = ["number"].includes(typeof a);
 	if (isNumber) {
 		if (Number.isNaN(a) && Number.isNaN(b)) {
@@ -61,33 +103,29 @@ function internalCompare(a: unknown, b: unknown, ignore: string[] = [], include:
 		}
 		return a === b;
 	}
+
+	if (a?.constructor.name && b?.constructor.name) {
+		const AIsSimpleWrapper = ["String", "Number", "Boolean", "BigInt"].includes(a?.constructor.name);
+		const BIsSimpleWrapper = ["String", "Number", "Boolean", "BigInt"].includes(b?.constructor.name);
+
+		if (AIsSimpleWrapper && BIsSimpleWrapper) {
+			// @ts-expect-error: `a` and `b` are not objects
+			return internalCompare(a.valueOf(), b.valueOf(), ignore, include);
+		}
+	}
+
 	const isArray = Array.isArray(a);
 	if (isArray) {
-		return compareArrs<unknown>(a as unknown[], b as unknown[], ignore, include);
+		return compareArrs(
+			a as (BasicCompareObject | BasicCompareType)[],
+			b as (BasicCompareObject | BasicCompareType)[],
+			ignore,
+			include,
+		);
 	}
-	return compareObjects(a as Record<string, unknown>, b as Record<string, unknown>, ignore, include);
+
+	return compareObjects(a as BasicCompareObject, b as BasicCompareObject, ignore, include);
 }
-
-/**
- * Options for `compare` function.
- *
- * topLevelIgnore - is an array of keys which should be ignored on top level of the provided object or top level of any provided object in an array.
- * topLevelInclude - is an array of keys which should be compared each other on top level of the provided object or top level of any provided object in an array.
- */
-export interface CompareOptions {
-	topLevelIgnore?: string[];
-	topLevelInclude?: string[];
-}
-
-export type SimpleTypedVariable = string | boolean | number | null | undefined;
-
-export type BasicCompareType = SimpleTypedVariable | SimpleTypedVariable[];
-
-export interface BasicCompareObject {
-	[key: string]: BasicCompareObject | BasicCompareType | (BasicCompareObject | BasicCompareType)[];
-}
-
-export type CompareType = BasicCompareObject | BasicCompareType | (BasicCompareObject | BasicCompareType)[];
 
 /**
  * Returns true if both objects are same, false otherwise.
