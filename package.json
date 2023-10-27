@@ -1,6 +1,6 @@
 {
   "name": "simple-comparator",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "The JS/TS utility to compare two simple objects, arrays or simple data type.",
   "main": "dist_commonjs/index.js",
   "types": "./index.ts",
