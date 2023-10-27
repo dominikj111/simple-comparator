@@ -56,6 +56,14 @@ function internalCompare(a, b, ignore = [], include = []) {
         }
         return a === b;
     }
+    if ((a === null || a === void 0 ? void 0 : a.constructor.name) && (b === null || b === void 0 ? void 0 : b.constructor.name)) {
+        const AIsSimpleWrapper = ["String", "Number", "Boolean", "BigInt"].includes(a === null || a === void 0 ? void 0 : a.constructor.name);
+        const BIsSimpleWrapper = ["String", "Number", "Boolean", "BigInt"].includes(b === null || b === void 0 ? void 0 : b.constructor.name);
+        if (AIsSimpleWrapper && BIsSimpleWrapper) {
+            // @ts-expect-error: `a` and `b` are not objects
+            return internalCompare(a.valueOf(), b.valueOf(), ignore, include);
+        }
+    }
     const isArray = Array.isArray(a);
     if (isArray) {
         return compareArrs(a, b, ignore, include);

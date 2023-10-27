@@ -7,6 +7,7 @@ export type {
 	BasicCompareType,
 	BasicCompareObject,
 	CompareType,
+	Comparable,
 } from "./src/comparator.ts";
 
 export { compare, same, different } from "./src/comparator.ts";

@@ -7,4 +7,5 @@ export {
 	BasicCompareType,
 	BasicCompareObject,
 	CompareType,
+	Comparable,
 } from "./src/comparator";
