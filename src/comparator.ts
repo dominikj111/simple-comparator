@@ -1,29 +1,61 @@
+/**
+ * A TypeScript library for deep comparison of objects, arrays, and primitive values.
+ * Provides flexible comparison options including selective property comparison,
+ * circular reference detection, and support for custom equality implementations.
+ */
+
 const WRAPPER_TYPES = new Set(["String", "Number", "Boolean", "BigInt"]);
 const SIMPLE_TYPES = new Set(["string", "boolean", "undefined"]);
 
 /**
- * Options for `compare` function.
+ * Options for customizing the comparison behavior.
  *
- * @param topLevelIgnore - Array or Set of keys to ignore on top level of the provided object or top level of any provided object in an array.
+ * @example
+ * ```typescript
+ * const options: CompareOptions = {
+ *   topLevelInclude: ['id', 'timestamp'],
+ *   topLevelIgnore: ['id2', 'timestamp2'],
+ *   shallow: false,
+ *   detectCircular: false
+ * };
+ * ```
+ *
  * @param topLevelInclude - Array or Set of keys to compare. If provided, only these keys will be compared. An empty Set means "include nothing".
+ * @param topLevelIgnore - Array or Set of keys to ignore on top level of the provided object or top level of any provided object in an array.
  * @param shallow - If true, performs shallow comparison. For objects and arrays after the first level, only references are compared instead of their contents.
  * @param detectCircular - If true, detects circular references. If false, returns false when a circular reference is detected.
  */
 export interface CompareOptions {
-	topLevelIgnore?: string[] | Set<string>;
 	topLevelInclude?: string[] | Set<string>;
+	topLevelIgnore?: string[] | Set<string>;
 	shallow?: boolean;
 	detectCircular?: boolean;
 }
 
 /**
- * Comparable interface for `compare` function.
- * If class object passed to `compare` function, it should implement this interface.
+ * Interface for implementing custom equality comparison logic.
+ * Objects implementing this interface can define their own equality rules.
+ *
+ * @example
+ * ```typescript
+ * class Person implements Comparable<Person> {
+ *   constructor(public name: string, public age: number) {}
+ *
+ *   equals(other: Person): boolean {
+ *     return this.name === other.name && this.age === other.age;
+ *   }
+ * }
+ * ```
  */
 export interface Comparable<T> {
 	equals: (_: T) => boolean;
 }
 
+/**
+ * Type representing all supported primitive and wrapper types for comparison.
+ * Includes strings, numbers, booleans, bigints (both primitive and object versions),
+ * null, undefined, and objects implementing the Comparable interface.
+ */
 export type SimpleTypedVariable =
 	| string
 	// eslint-disable-next-line @typescript-eslint/ban-types
@@ -42,25 +74,53 @@ export type SimpleTypedVariable =
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	| Comparable<any>;
 
+/**
+ * Type representing basic values that can be compared directly.
+ * Can be either a SimpleTypedVariable or an array of SimpleTypedVariables.
+ */
 export type BasicCompareType = SimpleTypedVariable | SimpleTypedVariable[];
 
+/**
+ * Type representing a complex object structure that can be compared.
+ * Objects can contain nested objects, arrays, or simple values of any supported type.
+ */
 export interface BasicCompareObject {
 	[key: string]: BasicCompareObject | BasicCompareType | (BasicCompareObject | BasicCompareType)[];
 }
 
 export type CompareType = BasicCompareObject | BasicCompareType | (BasicCompareObject | BasicCompareType)[];
 
+/**
+ * Collection of type checking utilities used internally by the comparison functions.
+ */
 export const typeChecker: Record<string, (a?: CompareType, b?: CompareType) => boolean> = {
+	/** Checks if both values are of the same type and array status */
 	bothAreSameType: (a, b) => typeof a === typeof b && Array.isArray(a) === Array.isArray(b),
+
+	/** Checks if a value is a simple primitive type */
 	isSimpleType: a => SIMPLE_TYPES.has(typeof a),
+
+	/** Checks if both values are null */
 	bothAreNulls: (a, b) => a === null && b === null,
+
+	/** Checks if a value is a number */
 	isNumber: a => ["number"].includes(typeof a),
+
+	/** Checks if a value is a non-null object */
 	isNotNullObject: a => typeof a === "object" && a !== null,
+
+	/** Checks if both values are numbers */
 	bothAreNumbers: (a, b) => typeChecker.isNumber(a) && typeChecker.isNumber(b),
+
+	/** Checks if both values are NaN */
 	bothAreNumbersAndNaNs: (a, b) => typeChecker.bothAreNumbers(a, b) && Number.isNaN(a) && Number.isNaN(b),
+
+	/** Checks if exactly one value is NaN */
 	bothAreNumbersAndOnlyOneIsNaN: (a, b) =>
 		typeChecker.bothAreNumbers(a, b) &&
 		((!Number.isNaN(a) && Number.isNaN(b)) || (Number.isNaN(a) && !Number.isNaN(b))),
+
+	/** Checks if both values are wrapper objects (String, Number, Boolean, BigInt) */
 	bothAreWrapperTypes: (a, b) =>
 		typeChecker.isNotNullObject(a) &&
 		typeChecker.isNotNullObject(b) &&
@@ -243,23 +303,38 @@ function internalCompare(
 }
 
 /**
- * Returns true if both objects are same, false otherwise.
- * Compares simple objects, arrays or simple typed variables.
+ * Compares two values for deep equality with configurable comparison options.
+ *
+ * @example
+ * ```typescript
+ * // Basic comparison
+ * compare({ a: 1, b: 2 }, { a: 1, b: 2 }); // true
+ *
+ * // Ignoring specific properties
+ * compare(
+ *   { id: 1, name: "John", age: 30 },
+ *   { id: 2, name: "John", age: 30 },
+ *   { topLevelIgnore: ["id"] }
+ * ); // true
+ *
+ * // Shallow comparison
+ * const obj1 = { a: { x: 1 } };
+ * const obj2 = { a: { x: 1 } };
+ * compare(obj1, obj2, { shallow: true }); // false (different object references)
+ * compare(obj1, obj2); // true (deep comparison)
+ *
+ * // Circular reference detection
+ * const circular1: any = { a: 1 };
+ * circular1.self = circular1;
+ * const circular2: any = { a: 1 };
+ * circular2.self = circular2;
+ * compare(circular1, circular2, { detectCircular: true }); // true
+ * ```
  *
  * @param a - First value to compare
  * @param b - Second value to compare
  * @param options - Comparison options
- * @param options.topLevelIgnore - Array or Set of keys to ignore in comparison
- * @param options.topLevelInclude - Array or Set of keys to include in comparison. Empty Set means "include nothing"
- * @param options.shallow - If true, performs shallow comparison after first level
- * @param options.detectCircular - If true, detects circular references. If false, returns false when a circular reference is detected.
- * @returns boolean - True if objects are equal according to comparison rules
- *
- * Notes:
- * - Processes JSON-stringifiable objects, arrays, and simple typed variables
- * - Handles null/undefined/NaN comparisons
- * - Supports wrapper objects (String, Number, Boolean, BigInt)
- * - For shallow comparison, only the first level is deeply compared
+ * @returns True if values are equal according to comparison rules
  */
 export function compare(a: CompareType, b: CompareType, options: CompareOptions = {}) {
 	const { topLevelIgnore, topLevelInclude, shallow, detectCircular = false } = options;
@@ -267,46 +342,36 @@ export function compare(a: CompareType, b: CompareType, options: CompareOptions 
 }
 
 /**
- * Returns true if both objects are same, false otherwise.
- * Compares simple objects, arrays or simple typed variables.
+ * Alias for the `compare` function. Provides a more natural way to check equality.
  *
- * @param a - First value to compare
- * @param b - Second value to compare
- * @param options - Comparison options
- * @param options.topLevelIgnore - Array or Set of keys to ignore in comparison
- * @param options.topLevelInclude - Array or Set of keys to include in comparison. Empty Set means "include nothing"
- * @param options.shallow - If true, performs shallow comparison after first level
- * @param options.detectCircular - If true, detects circular references. If false, returns false when a circular reference is detected.
- * @returns boolean - True if objects are equal according to comparison rules
- *
- * Notes:
- * - Processes JSON-stringifiable objects, arrays, and simple typed variables
- * - Handles null/undefined/NaN comparisons
- * - Supports wrapper objects (String, Number, Boolean, BigInt)
- * - For shallow comparison, only the first level is deeply compared
+ * @example
+ * ```typescript
+ * if (same(user1, user2, { topLevelIgnore: ["lastLoginTime"] })) {
+ *   console.log("Users are equivalent");
+ * }
+ * ```
  */
 export function same(a: CompareType, b: CompareType, options: CompareOptions = {}) {
 	return compare(a, b, options);
 }
 
 /**
- * Returns true if both objects are different, false otherwise.
- * Compares simple objects, arrays or simple typed variables.
+ * Inverse of the `same` function. Returns true if values are not equal.
  *
- * @param a - First value to compare
- * @param b - Second value to compare
- * @param options - Comparison options
- * @param options.topLevelIgnore - Array or Set of keys to ignore in comparison
- * @param options.topLevelInclude - Array or Set of keys to include in comparison. Empty Set means "include nothing"
- * @param options.shallow - If true, performs shallow comparison after first level
- * @param options.detectCircular - If true, detects circular references. If false, returns false when a circular reference is detected.
- * @returns boolean - True if objects are different according to comparison rules
+ * @example
+ * ```typescript
+ * // Check if objects have different content
+ * if (different(oldState, newState)) {
+ *   console.log("State has changed");
+ * }
  *
- * Notes:
- * - Processes JSON-stringifiable objects, arrays, and simple typed variables
- * - Handles null/undefined/NaN comparisons
- * - Supports wrapper objects (String, Number, Boolean, BigInt)
- * - For shallow comparison, only the first level is deeply compared
+ * // Ignore volatile fields in comparison
+ * if (different(record1, record2, {
+ *   topLevelIgnore: ["timestamp", "version"]
+ * })) {
+ *   console.log("Records have different content");
+ * }
+ * ```
  */
 export function different(a: CompareType, b: CompareType, options: CompareOptions = {}) {
 	return !compare(a, b, options);

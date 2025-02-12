@@ -1,7 +1,8 @@
 # TODO List
 
-- [ ] Update documentation and Readme file (make it more user friendly and attractive for other developers)
-- [ ] Add TypeScript type documentation
+- [x] Update documentation
+- [x] Add TypeScript type documentation
+- [ ] Readme file (make it more user friendly and attractive for other developers)
 - [ ] Check other markdowns
 - [ ] Update/improve the package.json
 
