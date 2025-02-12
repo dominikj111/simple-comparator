@@ -47,11 +47,3 @@ React.useEffect(() => {
 
 ...
 ```
-
-# Possible improvements when requested
-
-:black_square_button: Add bundling to import from CDN (vanilla js) -> umd, esm
-
-:black_square_button: Improve Continuous Integration (automatic build, linting and testing)
-
-:black_square_button: Add Changelog, Code of Conduct

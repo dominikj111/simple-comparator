@@ -8,11 +8,16 @@
 
 - [ ] Check/test other runtimes and environments
 
+- [ ] Improve Continuous Integration (automatic build, linting and testing)
+- [ ] Add Changelog
+
 - [ ] Add test cases for comparing objects with prototype chain
 
 - [ ] Add performance regression tests
 - [ ] Add performance benchmarks for different comparison scenarios
 - [ ] Document performance implications of different options
+
+- [ ] Add bundling to import from CDN (vanilla js) -> umd, esm
 
 ## Current Improvements
 
