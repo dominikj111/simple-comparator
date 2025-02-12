@@ -128,6 +128,16 @@ export const typeChecker: Record<string, (a?: CompareType, b?: CompareType) => b
 		!!b?.constructor.name &&
 		WRAPPER_TYPES.has(a?.constructor.name) &&
 		WRAPPER_TYPES.has(b?.constructor.name),
+
+	/** Checks if an object implements the Comparable interface */
+	isComparableObject: (a: any): a is Comparable<any> =>
+		typeChecker.isNotNullObject(a) &&
+		'equals' in a &&
+		typeof (a as any).equals === 'function',
+
+	/** Checks if both objects implement the Comparable interface */
+	bothAreComparableObjects: (a: any, b: any): boolean =>
+		typeChecker.isComparableObject(a) && typeChecker.isComparableObject(b)
 };
 
 function compareArrs<T extends CompareType>(
@@ -254,6 +264,12 @@ function internalCompare(
 			false,
 			circularObjectStorage,
 		);
+	}
+
+	// Check if both objects implement Comparable interface
+	if (typeChecker.bothAreComparableObjects(a, b)) {
+		// Use the equals method for comparison
+		return (a as Comparable<CompareType>).equals(b);
 	}
 
 	if (typeChecker.isNotNullObject(a)) {

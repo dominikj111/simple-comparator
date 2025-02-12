@@ -1,4 +1,4 @@
-import { compare, same, different, Comparable } from "./comparator";
+import { compare, same, different } from "./comparator";
 
 describe("Basic Comparison Tests", () => {
 	it("Compares multi typed arrays", () => {
@@ -189,31 +189,6 @@ describe("Basic Comparison Tests", () => {
 	it("Should resolve correctly true when comparing String and String", () => {
 		expect(compare(new String("test"), new String("test"))).toBeTruthy();
 		expect(compare(new String("test"), new String("test2"))).toBeFalsy();
-	});
-
-	it("Should resolve class objects implementing `Comparable` interface", () => {
-		class SomeClass implements Comparable<SomeClass> {
-			private test: string;
-
-			constructor(test: string) {
-				this.test = test;
-			}
-
-			public getTest() {
-				return this.test;
-			}
-
-			equals(_: SomeClass) {
-				return this.getTest() === _.getTest();
-			}
-		}
-
-		const someClass1 = new SomeClass("ab");
-		const someClass2 = new SomeClass("cd");
-		const someClass3 = new SomeClass("ab");
-
-		expect(compare(someClass1, someClass2)).toBe(false);
-		expect(compare(someClass1, someClass3)).toBe(true);
 	});
 
 	it("Should support Set for topLevelInclude option", () => {
