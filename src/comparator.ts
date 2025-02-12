@@ -2,6 +2,10 @@
  * A TypeScript library for deep comparison of objects, arrays, and primitive values.
  * Provides flexible comparison options including selective property comparison,
  * circular reference detection, and support for custom equality implementations.
+ * 
+ * The library has special handling for objects implementing the Comparable interface:
+ * - When comparing two Comparable objects, their equals() method is used
+ * - When comparing a Comparable object with a non-Comparable object, it falls back to property comparison
  */
 
 const WRAPPER_TYPES = new Set(["String", "Number", "Boolean", "BigInt"]);
@@ -345,6 +349,16 @@ function internalCompare(
  * const circular2: any = { a: 1 };
  * circular2.self = circular2;
  * compare(circular1, circular2, { detectCircular: true }); // true
+ *
+ * // Custom equality using Comparable interface
+ * class Point implements Comparable<Point> {
+ *   constructor(public x: number, public y: number) {}
+ *   equals(other: Point): boolean {
+ *     return this.x === other.x && this.y === other.y;
+ *   }
+ * }
+ * compare(new Point(1, 2), new Point(1, 2)); // true, uses Point's equals method
+ * compare(new Point(1, 2), { x: 1, y: 2 });  // true, falls back to property comparison
  * ```
  *
  * @param a - First value to compare
