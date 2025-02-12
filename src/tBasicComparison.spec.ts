@@ -1,6 +1,6 @@
 import { compare, same, different, Comparable } from "./comparator";
 
-describe("`compare` function tests", () => {
+describe("Basic Comparison Tests", () => {
 	it("Compares multi typed arrays", () => {
 		expect(compare([1, 2, 3], [1, 2, 3])).toBeTruthy();
 		expect(compare([1, 3, 2], [1, 2, 3])).toBeFalsy();
@@ -214,5 +214,103 @@ describe("`compare` function tests", () => {
 
 		expect(compare(someClass1, someClass2)).toBe(false);
 		expect(compare(someClass1, someClass3)).toBe(true);
+	});
+
+	it("Should support Set for topLevelInclude option", () => {
+		const obj1 = {
+			a: 1,
+			b: "test",
+			c: true,
+			d: [1, 2, 3],
+		};
+		const obj2 = {
+			a: 1,
+			b: "different",
+			c: false,
+			d: [4, 5, 6],
+		};
+
+		// Should only compare 'a' and 'd'
+		expect(
+			compare(obj1, obj2, {
+				topLevelInclude: new Set(["a", "d"]),
+			}),
+		).toBeFalsy(); // different because of 'd'
+
+		// Should only compare 'a' and 'b'
+		expect(
+			compare(obj1, obj2, {
+				topLevelInclude: new Set(["a", "b"]),
+			}),
+		).toBeFalsy(); // different because of 'b'
+
+		// Should only compare 'a'
+		expect(
+			compare(obj1, obj2, {
+				topLevelInclude: new Set(["a"]),
+			}),
+		).toBeTruthy(); // same because 'a' is equal
+	});
+
+	it("Should support Set for topLevelIgnore option", () => {
+		const obj1 = {
+			a: 1,
+			b: "test",
+			c: true,
+			d: [1, 2, 3],
+		};
+		const obj2 = {
+			a: 1,
+			b: "test",
+			c: false,
+			d: [4, 5, 6],
+		};
+
+		// Should ignore 'c' and 'd'
+		expect(
+			compare(obj1, obj2, {
+				topLevelIgnore: new Set(["c", "d"]),
+			}),
+		).toBeTruthy(); // same because 'a' and 'b' are equal
+
+		// Should ignore 'b' and 'c'
+		expect(
+			compare(obj1, obj2, {
+				topLevelIgnore: new Set(["b", "c"]),
+			}),
+		).toBeFalsy(); // different because of 'd'
+
+		// Empty Set should compare all
+		expect(
+			compare(obj1, obj2, {
+				topLevelIgnore: new Set(),
+			}),
+		).toBeFalsy(); // different because multiple fields differ
+	});
+
+	it("Should handle empty and single-item Sets correctly", () => {
+		const obj1 = { a: 1, b: 2 };
+		const obj2 = { a: 1, b: 3 };
+
+		// Empty Set in include should match nothing
+		expect(
+			compare(obj1, obj2, {
+				topLevelInclude: new Set(),
+			}),
+		).toBeTruthy();
+
+		// Single item Set in include
+		expect(
+			compare(obj1, obj2, {
+				topLevelInclude: new Set(["b"]),
+			}),
+		).toBeFalsy();
+
+		// Empty Set in ignore should ignore nothing (compare all)
+		expect(
+			compare(obj1, obj2, {
+				topLevelIgnore: new Set(),
+			}),
+		).toBeFalsy();
 	});
 });

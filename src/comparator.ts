@@ -1,12 +1,19 @@
+const WRAPPER_TYPES = new Set(["String", "Number", "Boolean", "BigInt"]);
+const SIMPLE_TYPES = new Set(["string", "boolean", "undefined"]);
+
 /**
  * Options for `compare` function.
  *
- * topLevelIgnore - is an array of keys which should be ignored on top level of the provided object or top level of any provided object in an array.
- * topLevelInclude - is an array of keys which should be compared each other on top level of the provided object or top level of any provided object in an array.
+ * @param topLevelIgnore - Array or Set of keys to ignore on top level of the provided object or top level of any provided object in an array.
+ * @param topLevelInclude - Array or Set of keys to compare. If provided, only these keys will be compared. An empty Set means "include nothing".
+ * @param shallow - If true, performs shallow comparison. For objects and arrays after the first level, only references are compared instead of their contents.
+ * @param detectCircular - If true, detects circular references. If false, returns false when a circular reference is detected.
  */
 export interface CompareOptions {
-	topLevelIgnore?: string[];
-	topLevelInclude?: string[];
+	topLevelIgnore?: string[] | Set<string>;
+	topLevelInclude?: string[] | Set<string>;
+	shallow?: boolean;
+	detectCircular?: boolean;
 }
 
 /**
@@ -43,74 +50,169 @@ export interface BasicCompareObject {
 
 export type CompareType = BasicCompareObject | BasicCompareType | (BasicCompareObject | BasicCompareType)[];
 
-function compareArrs<T extends CompareType>(a: T[], b: T[], ignore: string[] = [], include: string[] = []) {
+export const typeChecker: Record<string, (a?: CompareType, b?: CompareType) => boolean> = {
+	bothAreSameType: (a, b) => typeof a === typeof b && Array.isArray(a) === Array.isArray(b),
+	isSimpleType: a => SIMPLE_TYPES.has(typeof a),
+	bothAreNulls: (a, b) => a === null && b === null,
+	isNumber: a => ["number"].includes(typeof a),
+	isNotNullObject: a => typeof a === "object" && a !== null,
+	bothAreNumbers: (a, b) => typeChecker.isNumber(a) && typeChecker.isNumber(b),
+	bothAreNumbersAndNaNs: (a, b) => typeChecker.bothAreNumbers(a, b) && Number.isNaN(a) && Number.isNaN(b),
+	bothAreNumbersAndOnlyOneIsNaN: (a, b) =>
+		typeChecker.bothAreNumbers(a, b) &&
+		((!Number.isNaN(a) && Number.isNaN(b)) || (Number.isNaN(a) && !Number.isNaN(b))),
+	bothAreWrapperTypes: (a, b) =>
+		typeChecker.isNotNullObject(a) &&
+		typeChecker.isNotNullObject(b) &&
+		!!a?.constructor.name &&
+		!!b?.constructor.name &&
+		WRAPPER_TYPES.has(a?.constructor.name) &&
+		WRAPPER_TYPES.has(b?.constructor.name),
+};
+
+function compareArrs<T extends CompareType>(
+	a: T[],
+	b: T[],
+	ignore?: string[] | Set<string>,
+	include?: string[] | Set<string>,
+	shallow?: boolean,
+	detectCircular?: boolean,
+	firstRun?: boolean,
+	circularObjectStorage?: WeakSet<object>,
+) {
 	if (a.length !== b.length) {
 		return false;
 	}
 	for (let i = 0; i < a.length; i += 1) {
-		if (!internalCompare(a[i], b[i], ignore, include)) {
+		if (!internalCompare(a[i], b[i], ignore, include, shallow, detectCircular, firstRun, circularObjectStorage)) {
 			return false;
 		}
 	}
 	return true;
 }
 
-function compareObjects<T extends BasicCompareObject>(a: T, b: T, ignore: string[] = [], include: string[] = []) {
+function compareObjects<T extends BasicCompareObject>(
+	a: T,
+	b: T,
+	ignore?: string[] | Set<string>,
+	include?: string[] | Set<string>,
+	shallow?: boolean,
+	detectCircular?: boolean,
+	firstRun?: boolean,
+	circularObjectStorage?: WeakSet<object>,
+) {
 	let keysA;
 	let keysB;
 
-	if (!ignore.length && !include.length) {
+	const ignoreCheck = Array.isArray(ignore) ? (x: string) => ignore.includes(x) : (x: string) => ignore?.has(x);
+	const ignoreSize = Array.isArray(ignore) ? ignore.length : ignore?.size ?? 0;
+
+	const includeCheck = Array.isArray(include) ? (x: string) => include.includes(x) : (x: string) => include?.has(x);
+	const includeSize = Array.isArray(include) ? include.length : include?.size ?? 0;
+
+	// Empty include set means "include nothing" -> objects are equal
+	if (include && includeSize === 0) {
+		return true;
+	}
+
+	if (!ignoreSize && !includeSize) {
 		keysA = Object.keys(a || {}).sort();
 		keysB = Object.keys(b || {}).sort();
 	} else {
 		keysA = Object.keys(a || {})
 			.sort()
-			.filter(x => (include.length ? include.includes(x) : !ignore.includes(x)));
+			.filter(x => (includeSize ? includeCheck(x) : !ignoreCheck(x)));
 		keysB = Object.keys(b || {})
 			.sort()
-			.filter(x => (include.length ? include.includes(x) : !ignore.includes(x)));
+			.filter(x => (includeSize ? includeCheck(x) : !ignoreCheck(x)));
 	}
 
-	if (!compareArrs(keysA, keysB)) {
+	if (!compareArrs(keysA, keysB, ignore, include, shallow, detectCircular, firstRun, circularObjectStorage)) {
 		return false;
 	}
+
 	for (let i = 0; i < keysA.length; i += 1) {
-		if (!internalCompare(a[keysA[i]], b[keysA[i]])) {
+		if (
+			!internalCompare(
+				a[keysA[i]],
+				b[keysA[i]],
+				undefined,
+				undefined,
+				shallow,
+				detectCircular,
+				false,
+				circularObjectStorage,
+			)
+		) {
 			return false;
 		}
 	}
 	return true;
 }
 
-function internalCompare(a: CompareType, b: CompareType, ignore: string[] = [], include: string[] = []) {
-	const isSameType = typeof a === typeof b && Array.isArray(a) === Array.isArray(b);
-	if (!isSameType) {
+function internalCompare(
+	a: CompareType,
+	b: CompareType,
+	ignore?: string[] | Set<string>,
+	include?: string[] | Set<string>,
+	shallow?: boolean,
+	detectCircular: boolean = false,
+	// ---vvv--- only internal use ---vvv---
+	firstRun: boolean = true,
+	circularObjectStorage = new WeakSet<object>(),
+) {
+	if (!typeChecker.bothAreSameType(a, b)) {
 		return false;
 	}
 
-	const isSimpleType = ["string", "boolean", "undefined"].includes(typeof a);
-	if (isSimpleType || (a === null && b === null)) {
+	if (typeChecker.isSimpleType(a) || typeChecker.bothAreNulls(a, b)) {
 		return a === b;
 	}
 
-	const isNumber = ["number"].includes(typeof a);
-	if (isNumber) {
-		if (Number.isNaN(a) && Number.isNaN(b)) {
-			return true;
-		}
-		if ((!Number.isNaN(a) && Number.isNaN(b)) || (Number.isNaN(a) && !Number.isNaN(b))) {
-			return false;
-		}
+	if (typeChecker.bothAreNumbersAndNaNs(a, b)) {
+		return true;
+	}
+
+	if (typeChecker.bothAreNumbersAndOnlyOneIsNaN(a, b)) {
+		return false;
+	}
+
+	if (typeChecker.bothAreNumbers(a, b)) {
 		return a === b;
 	}
 
-	if (a?.constructor.name && b?.constructor.name) {
-		const AIsSimpleWrapper = ["String", "Number", "Boolean", "BigInt"].includes(a?.constructor.name);
-		const BIsSimpleWrapper = ["String", "Number", "Boolean", "BigInt"].includes(b?.constructor.name);
-
-		if (AIsSimpleWrapper && BIsSimpleWrapper) {
+	if (typeChecker.bothAreWrapperTypes(a, b)) {
+		return internalCompare(
 			// @ts-expect-error: `a` and `b` are not objects
-			return internalCompare(a.valueOf(), b.valueOf(), ignore, include);
+			a.valueOf(),
+			// @ts-expect-error: `a` and `b` are not objects
+			b.valueOf(),
+			ignore,
+			include,
+			shallow,
+			detectCircular,
+			false,
+			circularObjectStorage,
+		);
+	}
+
+	if (typeChecker.isNotNullObject(a)) {
+		// Handle circular references for objects (including arrays)
+		if (detectCircular) {
+			if (circularObjectStorage.has(a as object) && circularObjectStorage.has(b as object)) {
+				// If both objects are already in the storage, they are part of a circular reference
+				// Compare their structure up to this point
+				return true;
+			}
+
+			// Add both objects to storage before continuing comparison
+			circularObjectStorage.add(a as object);
+			circularObjectStorage.add(b as object);
+		}
+
+		// For shallow comparison, just check reference equality for non-primitive types after first level
+		if (!firstRun && shallow) {
+			return a === b;
 		}
 	}
 
@@ -121,30 +223,67 @@ function internalCompare(a: CompareType, b: CompareType, ignore: string[] = [], 
 			b as (BasicCompareObject | BasicCompareType)[],
 			ignore,
 			include,
+			shallow,
+			detectCircular,
+			false,
+			circularObjectStorage,
 		);
 	}
 
-	return compareObjects(a as BasicCompareObject, b as BasicCompareObject, ignore, include);
+	return compareObjects(
+		a as BasicCompareObject,
+		b as BasicCompareObject,
+		ignore,
+		include,
+		shallow,
+		detectCircular,
+		false,
+		circularObjectStorage,
+	);
 }
 
 /**
  * Returns true if both objects are same, false otherwise.
- * Compares simple objects, arrays or simple typed variable deeply.
+ * Compares simple objects, arrays or simple typed variables.
  *
- * It process the simple objects which are `JSON.stringify`-able, arrays containing such objects and simple typed variables.
- * It does matter if the internal variable is set to `null` or `undefined` or if it doesn't exist at all.
+ * @param a - First value to compare
+ * @param b - Second value to compare
+ * @param options - Comparison options
+ * @param options.topLevelIgnore - Array or Set of keys to ignore in comparison
+ * @param options.topLevelInclude - Array or Set of keys to include in comparison. Empty Set means "include nothing"
+ * @param options.shallow - If true, performs shallow comparison after first level
+ * @param options.detectCircular - If true, detects circular references. If false, returns false when a circular reference is detected.
+ * @returns boolean - True if objects are equal according to comparison rules
+ *
+ * Notes:
+ * - Processes JSON-stringifiable objects, arrays, and simple typed variables
+ * - Handles null/undefined/NaN comparisons
+ * - Supports wrapper objects (String, Number, Boolean, BigInt)
+ * - For shallow comparison, only the first level is deeply compared
  */
 export function compare(a: CompareType, b: CompareType, options: CompareOptions = {}) {
-	const { topLevelIgnore = [], topLevelInclude = [] } = options;
-	return internalCompare(a, b, topLevelIgnore, topLevelInclude);
+	const { topLevelIgnore, topLevelInclude, shallow, detectCircular = false } = options;
+	return internalCompare(a, b, topLevelIgnore, topLevelInclude, shallow, detectCircular);
 }
 
 /**
  * Returns true if both objects are same, false otherwise.
- * Compares simple objects, arrays or simple typed variable deeply.
+ * Compares simple objects, arrays or simple typed variables.
  *
- * It process the simple objects which are `JSON.stringify`-able, arrays containing such objects and simple typed variables.
- * It does matter if the internal variable is set to `null` or `undefined` or if it doesn't exist at all.
+ * @param a - First value to compare
+ * @param b - Second value to compare
+ * @param options - Comparison options
+ * @param options.topLevelIgnore - Array or Set of keys to ignore in comparison
+ * @param options.topLevelInclude - Array or Set of keys to include in comparison. Empty Set means "include nothing"
+ * @param options.shallow - If true, performs shallow comparison after first level
+ * @param options.detectCircular - If true, detects circular references. If false, returns false when a circular reference is detected.
+ * @returns boolean - True if objects are equal according to comparison rules
+ *
+ * Notes:
+ * - Processes JSON-stringifiable objects, arrays, and simple typed variables
+ * - Handles null/undefined/NaN comparisons
+ * - Supports wrapper objects (String, Number, Boolean, BigInt)
+ * - For shallow comparison, only the first level is deeply compared
  */
 export function same(a: CompareType, b: CompareType, options: CompareOptions = {}) {
 	return compare(a, b, options);
@@ -152,10 +291,22 @@ export function same(a: CompareType, b: CompareType, options: CompareOptions = {
 
 /**
  * Returns true if both objects are different, false otherwise.
- * Compares simple objects, arrays or simple typed variable deeply.
+ * Compares simple objects, arrays or simple typed variables.
  *
- * It process the simple objects which are `JSON.stringify`-able, arrays containing such objects and simple typed variables.
- * It does matter if the internal variable is set to `null` or `undefined` or if it doesn't exist at all.
+ * @param a - First value to compare
+ * @param b - Second value to compare
+ * @param options - Comparison options
+ * @param options.topLevelIgnore - Array or Set of keys to ignore in comparison
+ * @param options.topLevelInclude - Array or Set of keys to include in comparison. Empty Set means "include nothing"
+ * @param options.shallow - If true, performs shallow comparison after first level
+ * @param options.detectCircular - If true, detects circular references. If false, returns false when a circular reference is detected.
+ * @returns boolean - True if objects are different according to comparison rules
+ *
+ * Notes:
+ * - Processes JSON-stringifiable objects, arrays, and simple typed variables
+ * - Handles null/undefined/NaN comparisons
+ * - Supports wrapper objects (String, Number, Boolean, BigInt)
+ * - For shallow comparison, only the first level is deeply compared
  */
 export function different(a: CompareType, b: CompareType, options: CompareOptions = {}) {
 	return !compare(a, b, options);

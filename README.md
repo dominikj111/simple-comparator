@@ -35,7 +35,7 @@ As a develoer, I want:
 - To deeply compare two objects, arrays or simple data type.
 
 ```ts
-import { same, diff, compare } from "simple-comparator/index";
+import { same, diff, compare } from "simple-comparator";
 
 ...
 
