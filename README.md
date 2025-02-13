@@ -25,17 +25,6 @@ A powerful, flexible deep equality comparison production ready library for JavaS
 npm install simple-comparator
 ```
 
-### Alternative Package Managers
-
-The library can also be installed using Bun:
-
-```bash
-bun add simple-comparator
-```
-
-Note: `bun test` doesn't work as expected with this library as there are Deno tests included and bun can't resolve the
-`assert_equals` module.
-
 ### Deno
 
 Import directly from GitHub:
@@ -135,11 +124,12 @@ compare(obj1, obj2); // true (deep comparison)
 
 ## 🧪 Testing
 
-Run the test suite which includes tests for both Node.js and Deno environments:
+The project includes comprehensive test suites for different JavaScript environments. When running `npm test -s` or
+`yarn test`:
 
-```bash
-npm test
-```
+- ESLint checks are performed
+- Jest tests are run for both CommonJS and ES modules
+- Deno tests are executed if Deno is installed (skipped with a notification if Deno is not available)
 
 This will execute:
 
@@ -159,7 +149,7 @@ This library is licensed under the Apache License, Version 2.0. You may obtain a
 
 ✅ Check/test other runtimes and environments  
 ✅ Improve Continuous Integration (automatic build, linting and testing)  
-⬜ Add test cases for comparing objects with prototype chain  
+⬜ Add test cases for comparing objects with prototype chain
 
 ### Performance
 

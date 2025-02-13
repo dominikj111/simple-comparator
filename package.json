@@ -16,7 +16,7 @@
 	"scripts": {
 		"build": "rm -rf dist_commonjs/* dist_es6/* && tsc --project tsconfig-commonjs.json && tsc --project tsconfig-es6.json && npm run minify",
 		"minify": "for file in $(find dist_commonjs dist_es6 -name '*.js'); do terser \"$file\" -c -m --source-map \"content='${file}.map',url='$(basename ${file}).map'\" -o \"$file\"; done",
-		"test": "npm run lint:all && jest && jest -c jest-node.config.json && deno test --config tsconfig-deno.json",
+		"test": "npm run lint:all && jest && jest -c jest-node.config.json && command -v deno >/dev/null 2>&1 && deno test --config tsconfig-deno.json || echo '\nℹ️  \u001b[33mDeno is not installed. Skipping Deno tests.\u001b[0m'",
 		"lint": "eslint .",
 		"lint:md": "markdownlint \"**/*.md\" --fix",
 		"format": "prettier --check \"**/*.{ts,js,json,md}\"",
