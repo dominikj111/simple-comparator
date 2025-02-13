@@ -2,7 +2,7 @@
  * A TypeScript library for deep comparison of objects, arrays, and primitive values.
  * Provides flexible comparison options including selective property comparison,
  * circular reference detection, and support for custom equality implementations.
- * 
+ *
  * The library has special handling for objects implementing the Comparable interface:
  * - When comparing two Comparable objects, their equals() method is used
  * - When comparing a Comparable object with a non-Comparable object, it falls back to property comparison
@@ -62,18 +62,18 @@ export interface Comparable<T> {
  */
 export type SimpleTypedVariable =
 	| string
-	// eslint-disable-next-line @typescript-eslint/ban-types
+	// eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
 	| String
 	| boolean
-	// eslint-disable-next-line @typescript-eslint/ban-types
+	// eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
 	| Boolean
 	| number
-	// eslint-disable-next-line @typescript-eslint/ban-types
+	// eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
 	| Number
 	| null
 	| undefined
 	| bigint
-	// eslint-disable-next-line @typescript-eslint/ban-types
+	// eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
 	| BigInt
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	| Comparable<any>;
@@ -97,7 +97,7 @@ export type CompareType = BasicCompareObject | BasicCompareType | (BasicCompareO
 /**
  * Collection of type checking utilities used internally by the comparison functions.
  */
-export const typeChecker: Record<string, (a?: CompareType, b?: CompareType) => boolean> = {
+export const typeChecker: Record<string, (_a?: CompareType, _b?: CompareType) => boolean> = {
 	/** Checks if both values are of the same type and array status */
 	bothAreSameType: (a, b) => typeof a === typeof b && Array.isArray(a) === Array.isArray(b),
 
@@ -134,14 +134,15 @@ export const typeChecker: Record<string, (a?: CompareType, b?: CompareType) => b
 		WRAPPER_TYPES.has(b?.constructor.name),
 
 	/** Checks if an object implements the Comparable interface */
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	isComparableObject: (a: any): a is Comparable<any> =>
-		typeChecker.isNotNullObject(a) &&
-		'equals' in a &&
-		typeof (a as any).equals === 'function',
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		typeChecker.isNotNullObject(a) && "equals" in a && typeof (a as any).equals === "function",
 
 	/** Checks if both objects implement the Comparable interface */
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	bothAreComparableObjects: (a: any, b: any): boolean =>
-		typeChecker.isComparableObject(a) && typeChecker.isComparableObject(b)
+		typeChecker.isComparableObject(a) && typeChecker.isComparableObject(b),
 };
 
 function compareArrs<T extends CompareType>(
@@ -179,10 +180,10 @@ function compareObjects<T extends BasicCompareObject>(
 	let keysB;
 
 	const ignoreCheck = Array.isArray(ignore) ? (x: string) => ignore.includes(x) : (x: string) => ignore?.has(x);
-	const ignoreSize = Array.isArray(ignore) ? ignore.length : ignore?.size ?? 0;
+	const ignoreSize = Array.isArray(ignore) ? ignore.length : (ignore?.size ?? 0);
 
 	const includeCheck = Array.isArray(include) ? (x: string) => include.includes(x) : (x: string) => include?.has(x);
-	const includeSize = Array.isArray(include) ? include.length : include?.size ?? 0;
+	const includeSize = Array.isArray(include) ? include.length : (include?.size ?? 0);
 
 	// Empty include set means "include nothing" -> objects are equal
 	if (include && includeSize === 0) {

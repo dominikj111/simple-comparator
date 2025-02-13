@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { compare } from "./comparator";
 
 describe("Circular References", () => {

@@ -5,6 +5,7 @@
 	"main": "dist_commonjs/index.js",
 	"module": "dist_es6/index.js",
 	"types": "./index.ts",
+	"type": "module",
 	"exports": {
 		".": {
 			"import": "./dist_es6/index.js",
@@ -13,8 +14,15 @@
 		}
 	},
 	"scripts": {
-		"build": "rm -rf dist_commonjs/* dist_es6/* && tsc --project tsconfig-commonjs.json && tsc --project tsconfig-es6.json",
-		"test": "jest && jest -c jest-node.config.json && deno test --config tsconfig-deno.json"
+		"build": "rm -rf dist_commonjs/* dist_es6/* && tsc --project tsconfig-commonjs.json && tsc --project tsconfig-es6.json && npm run minify",
+		"minify": "for file in $(find dist_commonjs dist_es6 -name '*.js'); do terser \"$file\" -c -m --source-map \"content='${file}.map',url='$(basename ${file}).map'\" -o \"$file\"; done",
+		"test": "npm run lint:all && jest && jest -c jest-node.config.json && deno test --config tsconfig-deno.json",
+		"lint": "eslint .",
+		"lint:md": "markdownlint \"**/*.md\" --fix",
+		"format": "prettier --check \"**/*.{ts,js,json,md}\"",
+		"lint:all": "npm run lint && npm run lint:md && npm run format",
+		"lint:fix": "eslint . --fix",
+		"format:fix": "prettier --write \"**/*.{ts,js,json,md}\""
 	},
 	"repository": {
 		"type": "git",
@@ -42,15 +50,19 @@
 	},
 	"homepage": "https://github.com/dominikj111/simple-comparator#readme",
 	"devDependencies": {
-		"@types/jest": "^29.5.6",
-		"@typescript-eslint/eslint-plugin": "^6.9.0",
-		"@typescript-eslint/parser": "^6.9.0",
-		"eslint": "^8.52.0",
-		"eslint-config-prettier": "^9.0.0",
-		"eslint-plugin-import": "^2.29.0",
-		"eslint-plugin-prettier": "^5.0.1",
-		"jest": "^29.7.0",
-		"ts-jest": "^29.1.1",
-		"typescript": "^5.2.2"
+		"@eslint/js": "9.20.0",
+		"@types/jest": "29.5.14",
+		"@typescript-eslint/eslint-plugin": "8.24.0",
+		"@typescript-eslint/parser": "8.24.0",
+		"eslint": "9.20.1",
+		"eslint-config-prettier": "10.0.1",
+		"eslint-plugin-import": "2.31.0",
+		"eslint-plugin-prettier": "5.2.3",
+		"jest": "29.7.0",
+		"markdownlint-cli": "0.44.0",
+		"prettier": "3.5.0",
+		"terser": "^5.38.2",
+		"ts-jest": "29.2.5",
+		"typescript": "5.7.3"
 	}
 }

@@ -293,6 +293,7 @@ describe("Comparable Interface Tests", () => {
 			);
 
 			// The objects should be equal in comparison because only enumerable properties are compared
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			expect(compare(instance as any, plainObject)).toBe(true);
 		});
 	});
