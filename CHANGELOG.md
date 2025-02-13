@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.1] - 2025-02-13
+
+- Fix: wrong Deno import url
+
 ## [1.2.0] - 2025-02-13
 
 ### Changed
