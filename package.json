@@ -2,21 +2,27 @@
 	"name": "simple-comparator",
 	"version": "1.2.1",
 	"description": "A production-ready deep equality comparison library for JavaScript and TypeScript, supporting complex objects, arrays, and primitive types with circular reference detection. Works seamlessly across Node.js, Deno, and browser environments.",
-	"main": "dist_commonjs/index.js",
+	"main": "dist_commonjs/index.cjs",
 	"module": "dist_es6/index.js",
 	"types": "./index.ts",
 	"type": "module",
 	"exports": {
 		".": {
 			"import": "./dist_es6/index.js",
-			"require": "./dist_commonjs/index.js",
+			"require": "./dist_commonjs/index.cjs",
 			"types": "./index.ts"
 		}
 	},
 	"scripts": {
-		"build": "rm -rf dist_commonjs/* dist_es6/* && tsc --project tsconfig-commonjs.json && tsc --project tsconfig-es6.json && npm run minify",
-		"minify": "for file in $(find dist_commonjs dist_es6 -name '*.js'); do terser \"$file\" -c -m --source-map \"content='${file}.map',url='$(basename ${file}).map'\" -o \"$file\"; done",
-		"test": "npm run lint:all && jest && jest -c jest-node.config.json && command -v deno >/dev/null 2>&1 && deno test --config tsconfig-deno.json || echo '\nℹ️  \u001b[33mDeno is not installed. Skipping Deno tests.\u001b[0m'",
+		"build": "rm -rf dist_commonjs/* dist_es6/* && tsc --project tsconfig-commonjs.json && tsc --project tsconfig-es6.json && npm run minify:all && npm run rename-cjs && npm run fix-maps",
+		"rename-cjs": "find dist_commonjs -name '*.js' -exec sh -c 'mv \"$1\" \"${1%.js}.cjs\"' _ {} \\;",
+		"fix-maps": "find dist_commonjs -name '*.map' -exec sh -c 'mv \"$1\" \"${1%.js.map}.cjs.map\"' _ {} \\;",
+		"minify:all": "npm run minify:commonjs && npm run minify:es6",
+		"minify:commonjs": "for file in $(find dist_commonjs -name '*.js'); do terser \"$file\" -c -m --source-map \"content='${file}.map',url='$(basename ${file%.*}).cjs.map'\" -o \"$file\"; done",
+		"minify:es6": "for file in $(find dist_es6 -name '*.js'); do terser \"$file\" -c -m --source-map \"content='${file}.map',url='$(basename ${file}).map'\" -o \"$file\"; done",
+		"test": "npm run lint:all && jest && jest -c jest-node.config.json && npm run test:deno",
+		"test:coverage": "jest --coverage",
+		"test:deno": "command -v deno >/dev/null 2>&1 && (deno test --config tsconfig-deno.json || exit 1) || (echo '\nℹ️  \u001b[33mDeno is not installed. Skipping Deno tests.\u001b[0m' && exit 0)",
 		"lint": "eslint .",
 		"lint:md": "markdownlint \"**/*.md\" --fix",
 		"format": "prettier --check \"**/*.{ts,js,json,md}\"",

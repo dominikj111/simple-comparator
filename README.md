@@ -160,8 +160,9 @@ This library is licensed under the Apache License, Version 2.0. You may obtain a
 
 ### Distribution
 
+⬜ Add [publint](https://publint.dev/) support
 ⬜ Add bundling to import from CDN (vanilla js) -> umd, esm  
-⬜ Add Changelog  
+✅ Add Changelog  
 ⬜ Publish to JSR (Deno Registry) for better Deno integration
 
 ### Features & Improvements
