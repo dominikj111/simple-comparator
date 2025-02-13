@@ -4,7 +4,6 @@
 [![dependencies](https://img.shields.io/badge/production%20dependencies-0-brightgreen.svg)](https://github.com/dominikj111/simple-comparator/blob/main/package.json)
 [![Coverage Status](https://coveralls.io/repos/boennemann/badges/badge.svg)](https://coveralls.io/r/boennemann/badges)
 [![License](https://img.shields.io/github/license/dominikj111/simple-comparator)](https://github.com/dominikj111/simple-comparator/blob/main/LICENSE)
-[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dominikj111/simple-comparator/issues)
 
 > A powerful, flexible deep equality comparison production ready library for JavaScript and TypeScript, inspired by
 > Jest's `toEqual()`. Works seamlessly in both Deno and Node.js environments.
