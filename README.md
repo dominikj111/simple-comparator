@@ -1,11 +1,13 @@
 # Simple Comparator
 
-[![GitHub version](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=1.2.1&x2=0)](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=1.2.1&x2=0)
+[![npm](https://img.shields.io/npm/v/simple-comparator)](https://www.npmjs.com/package/simple-comparator)
+[![dependencies](https://img.shields.io/badge/production%20dependencies-0-brightgreen.svg)](https://github.com/dominikj111/simple-comparator/blob/main/package.json)
 [![Coverage Status](https://coveralls.io/repos/boennemann/badges/badge.svg)](https://coveralls.io/r/boennemann/badges)
-[![dependency status](https://deps.rs/crate/autocfg/1.4.0/status.svg)](https://deps.rs/crate/autocfg/1.4.0)
+[![License](https://img.shields.io/github/license/dominikj111/simple-comparator)](https://github.com/dominikj111/simple-comparator/blob/main/LICENSE)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dominikj111/simple-comparator/issues)
 
-A powerful, flexible deep equality comparison production ready library for JavaScript and TypeScript, inspired by Jest's
-`toEqual()`. Works seamlessly in both Deno and Node.js environments.
+> A powerful, flexible deep equality comparison production ready library for JavaScript and TypeScript, inspired by
+> Jest's `toEqual()`. Works seamlessly in both Deno and Node.js environments.
 
 ## 🚀 Features
 
@@ -160,8 +162,7 @@ This library is licensed under the Apache License, Version 2.0. You may obtain a
 
 ### Distribution
 
-⬜ Add [publint](https://publint.dev/) support
-⬜ Add bundling to import from CDN (vanilla js) -> umd, esm  
+⬜ Add [publint](https://publint.dev/) support ⬜ Add bundling to import from CDN (vanilla js) -> umd, esm  
 ✅ Add Changelog  
 ⬜ Publish to JSR (Deno Registry) for better Deno integration
 
