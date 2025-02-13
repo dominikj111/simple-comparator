@@ -1,8 +1,8 @@
 # Simple Comparator
 
-[![GitHub version](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=1.1.0&x2=0)](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=1.1.0&x2=0)
+[![GitHub version](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=1.2.0&x2=0)](https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=1.2.0&x2=0)
 [![Coverage Status](https://coveralls.io/repos/boennemann/badges/badge.svg)](https://coveralls.io/r/boennemann/badges)
-[![dependency status](https://deps.rs/crate/autocfg/1.1.0/status.svg)](https://deps.rs/crate/autocfg/1.1.0)
+[![dependency status](https://deps.rs/crate/autocfg/1.2.0/status.svg)](https://deps.rs/crate/autocfg/1.2.0)
 
 A powerful, flexible deep equality comparison production ready library for JavaScript and TypeScript, inspired by Jest's
 `toEqual()`. Works seamlessly in both Deno and Node.js environments.
