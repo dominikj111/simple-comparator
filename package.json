@@ -8,11 +8,26 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./dist_es6/index.js",
-			"require": "./dist_commonjs/index.cjs",
-			"types": "./index.ts"
+			"types": "./index.ts",
+			"import": {
+				"types": "./index.ts",
+				"default": "./dist_es6/index.js"
+			},
+			"require": {
+				"types": "./index.cts",
+				"default": "./dist_commonjs/index.cjs"
+			}
 		}
 	},
+	"files": [
+		"dist_commonjs",
+		"dist_es6",
+		"src",
+		"index.cts",
+		"index.ts",
+		"mod.js",
+		"mod.ts"
+	],
 	"scripts": {
 		"build": "rm -rf dist_commonjs/* dist_es6/* && tsc --project tsconfig-commonjs.json && tsc --project tsconfig-es6.json && npm run minify:all && npm run rename-cjs && npm run fix-maps",
 		"rename-cjs": "find dist_commonjs -name '*.js' -exec sh -c 'mv \"$1\" \"${1%.js}.cjs\"' _ {} \\;",
@@ -26,7 +41,8 @@
 		"lint": "eslint .",
 		"lint:md": "markdownlint \"**/*.md\" --fix",
 		"format": "prettier --check \"**/*.{ts,js,json,md}\"",
-		"lint:all": "npm run lint && npm run lint:md && npm run format",
+		"lint:all": "npm run lint && npm run lint:md && npm run publint && npm run format",
+		"publint": "npx publint",
 		"lint:fix": "eslint . --fix",
 		"format:fix": "prettier --write \"**/*.{ts,js,json,md}\""
 	},
