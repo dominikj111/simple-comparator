@@ -161,8 +161,7 @@ This library is licensed under the Apache License, Version 2.0. You may obtain a
 
 ### Distribution
 
-✅ Add [publint](https://publint.dev/) support ⬜ Add bundling to import from CDN (vanilla js) -> umd, esm  
-✅ Add Changelog  
+✅ Add [publint](https://publint.dev/) support ✅ Add Changelog  
 ⬜ Publish to JSR (Deno Registry) for better Deno integration
 
 ### Features & Improvements
@@ -176,3 +175,7 @@ This library is licensed under the Apache License, Version 2.0. You may obtain a
 ### Future (v2)
 
 ⬜ Enhance circular reference detection with WeakMap to store metadata (depth, path, corresponding object)
+
+### Maybe or per request
+
+⬜ Add bundling to import from CDN (vanilla js) -> umd, esm
