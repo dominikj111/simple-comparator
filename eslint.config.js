@@ -6,7 +6,7 @@ import eslintConfigPrettier from "eslint-config-prettier";
 
 export default [
 	{
-		ignores: ["dist_commonjs/**", "dist_es6/**"],
+		ignores: ["dist_commonjs/**", "dist_es6/**", "coverage/**"],
 	},
 	eslint.configs.recommended,
 	{
@@ -15,6 +15,15 @@ export default [
 			parser: tseslintParser,
 			ecmaVersion: 2022,
 			sourceType: "module",
+			globals: {
+				setTimeout: "readonly",
+				clearTimeout: "readonly",
+				setInterval: "readonly",
+				clearInterval: "readonly",
+				console: "readonly",
+				window: "readonly",
+				document: "readonly",
+			},
 		},
 		plugins: {
 			"@typescript-eslint": tseslint,
