@@ -179,3 +179,9 @@ This library is licensed under the Apache License, Version 2.0. You may obtain a
 ### Maybe or per request
 
 ⬜ Add bundling to import from CDN (vanilla js) -> umd, esm
+
+---
+
+<div align="center">
+Made with ❤️ because I love coding
+</div>
