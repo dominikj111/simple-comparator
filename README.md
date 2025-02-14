@@ -8,7 +8,7 @@
 > A powerful, flexible deep equality comparison production ready library for JavaScript and TypeScript, inspired by
 > Jest's `toEqual()`. Works seamlessly in both Deno and Node.js environments.
 
-## 🚀 Features
+## ✨ Features
 
 - 🔍 **Deep Equality Comparison** - Compare nested objects and arrays with ease
 - 🎯 **Selective Property Comparison** - Include or ignore specific properties
@@ -18,7 +18,7 @@
 - 💡 **Type-Safe** - Written in TypeScript with full type definitions
 - ⚡ **Performance Focused** - Optional features like circular reference detection
 
-## 📦 Installation
+## 🛠️ Installation
 
 ### Node.js
 
@@ -62,7 +62,7 @@ if (different(oldState, newState)) {
 }
 ```
 
-## 🛠️ Advanced Features
+## 💡 Advanced Features
 
 ### 1. Selective Property Comparison
 
