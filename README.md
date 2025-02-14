@@ -35,13 +35,13 @@ import {
     compare,
     same,
     different,
-} from "https://raw.githubusercontent.com/dominikj111/simple-comparator/refs/tags/v1.2.1/index-deno.js";
+} from "https://raw.githubusercontent.com/dominikj111/simple-comparator/refs/tags/v1.2.1/mod.js";
 ```
 
 Or from your local files:
 
 ```typescript
-import { compare, same, different } from "./index-deno.js";
+import { compare, same, different } from "./mod.js";
 ```
 
 ## 🎮 Quick Start
