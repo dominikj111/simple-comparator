@@ -18,6 +18,19 @@
 - 💡 **Type-Safe** - Written in TypeScript with full type definitions
 - ⚡ **Performance Focused** - Optional features like circular reference detection
 
+## 🚀 Why Choose Simple Comparator?
+
+- **Zero Dependencies** - No external dependencies means smaller bundle size and no security vulnerabilities from
+  third-party packages
+- **Efficient Implementation** - Direct property comparison without using slow methods like `JSON.stringify()` or
+  expensive hashing functions. For simple types, the performance is identical to using native comparison operators,
+  making it safe to use everywhere in your code without performance overhead
+- **Memory Efficient** - No object cloning or temporary data structures required during comparison
+- **Flexible Yet Simple** - Powerful features without the complexity of libraries like `deep-equal` (which has 17+
+  dependencies)
+- **Browser Compatible** - Unlike some alternatives (e.g., deprecated `lodash.isequal`), works reliably in both Node.js
+  and browser environments
+
 ## 🛠️ Installation
 
 ### Node.js
