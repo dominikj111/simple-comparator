@@ -1,4 +1,4 @@
-import { compare } from "./comparator";
+import { compare } from "../src/comparator";
 
 describe("Shallow Comparison", () => {
 	it("Should support shallow comparison", () => {

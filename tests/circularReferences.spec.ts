@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { compare } from "./comparator";
+import { compare } from "../src/comparator";
 
 describe("Circular References", () => {
 	it("Should handle circular references when detectCircular is true", () => {

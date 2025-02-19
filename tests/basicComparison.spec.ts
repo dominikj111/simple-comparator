@@ -1,4 +1,4 @@
-import { compare, same, different } from "./comparator";
+import { compare, same, different } from "../src/comparator";
 
 describe("Basic Comparison Tests", () => {
 	it("Compares multi typed arrays", () => {

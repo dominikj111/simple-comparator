@@ -3,5 +3,5 @@
 	"coveragePathIgnorePatterns": ["/node_modules/"],
 	"moduleFileExtensions": ["js", "cjs", "json"],
 	"testEnvironment": "node",
-	"testMatch": ["**/tests/node.test.js"]
+	"testMatch": ["**/tests/environmental/node.test.js"]
 }

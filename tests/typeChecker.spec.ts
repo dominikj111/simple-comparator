@@ -1,4 +1,4 @@
-import { typeChecker } from "./comparator";
+import { typeChecker } from "../src/comparator";
 
 describe("Type Checker tests", () => {
 	describe("isSimpleType", () => {

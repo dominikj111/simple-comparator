@@ -1,4 +1,4 @@
-import { compare, Comparable } from "./comparator";
+import { compare, Comparable } from "../src/comparator";
 
 class Point implements Comparable<Point> {
 	constructor(
