@@ -12,10 +12,10 @@ comparator clean and efficient.
 3. **Opt-in Feature**: Disabled by default, enabled through CompareOptions
 4. **Flexible Comparison Modes**: Support different levels of prototype chain comparison
 5. **Enhancer Pattern**: Use the enhancer pattern to wrap and extend core comparator functionality
-   - Non-invasive extension of core functionality
-   - Composable with other feature enhancers
-   - Clean separation of concerns
-   - Easy testing of enhanced functionality
+    - Non-invasive extension of core functionality
+    - Composable with other feature enhancers
+    - Clean separation of concerns
+    - Easy testing of enhanced functionality
 
 ## Implementation
 
@@ -58,6 +58,7 @@ export function enhanceComparator(originalCompare: typeof compare) {
 ```
 
 This pattern allows:
+
 - Clean integration with core functionality
 - Easy composition with other enhancers
 - Simple feature toggling
