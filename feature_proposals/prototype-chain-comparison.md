@@ -11,6 +11,11 @@ comparator clean and efficient.
 2. **Minimal Core Changes**: Only essential updates to `comparator.ts`
 3. **Opt-in Feature**: Disabled by default, enabled through CompareOptions
 4. **Flexible Comparison Modes**: Support different levels of prototype chain comparison
+5. **Enhancer Pattern**: Use the enhancer pattern to wrap and extend core comparator functionality
+   - Non-invasive extension of core functionality
+   - Composable with other feature enhancers
+   - Clean separation of concerns
+   - Easy testing of enhanced functionality
 
 ## Implementation
 
@@ -36,7 +41,9 @@ interface CompareOptions {
 }
 ```
 
-### 3. Integration Point
+### 3. Integration Point (Using Enhancer Pattern)
+
+The implementation uses the enhancer pattern to wrap and extend the core comparator:
 
 ```typescript
 // In chainComparator.ts
@@ -50,7 +57,13 @@ export function enhanceComparator(originalCompare: typeof compare) {
 }
 ```
 
-## Usage Examples
+This pattern allows:
+- Clean integration with core functionality
+- Easy composition with other enhancers
+- Simple feature toggling
+- Independent testing of chain comparison logic
+
+### 4. Usage Examples
 
 ```typescript
 // Basic usage (core functionality)
