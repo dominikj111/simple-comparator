@@ -159,22 +159,33 @@ This library is licensed under the Apache License, Version 2.0. You may obtain a
 
 ## TODO List
 
+### Future (v2)
+
+⬜ Add test cases for comparing objects with prototype chain
+⬜ Provide CDN-hosted bundles in both UMD and ESM formats for direct browser usage
+⬜ Support complex types (Regex, Map, Set, functions)
+⬜ Add support for comparing objects with Symbol properties
+
+### Future (v3)
+
+⬜ Enhance circular reference detection with WeakMap to store metadata (depth, path, corresponding object)  
+⬜ Implement object signature caching using WeakMap for optimizing repeated comparisons
+
 ### Testing & CI
 
 ✅ Check/test other runtimes and environments  
 ✅ Improve Continuous Integration (automatic build, linting and testing)  
-⬜ Add test cases for comparing objects with prototype chain
 
 ### Performance
 
 ⬜ Add performance regression tests
-
 ⬜ Add performance benchmarks for different comparison scenarios  
 ⬜ Document performance implications of different options
 
 ### Distribution
 
-✅ Add [publint](https://publint.dev/) support ✅ Add Changelog  
+✅ Add [publint](https://publint.dev/) support
+✅ Add Changelog  
 ⬜ Publish to JSR (Deno Registry) for better Deno integration
 
 ### Features & Improvements
@@ -182,16 +193,7 @@ This library is licensed under the Apache License, Version 2.0. You may obtain a
 ✅ Optimize circular reference detection by making it optional  
 ⬜ Add input validation for comparison options  
 ⬜ Add option for partial array matching (e.g., array contains subset)  
-⬜ Add option for fuzzy string comparison  
-⬜ Support complex types (Regex, Map, Set, functions)
-
-### Future (v2)
-
-⬜ Enhance circular reference detection with WeakMap to store metadata (depth, path, corresponding object)
-
-### Maybe or per request
-
-⬜ Add bundling to import from CDN (vanilla js) -> umd, esm
+⬜ Add option for fuzzy string comparison
 
 ---
 
