@@ -161,10 +161,9 @@ This library is licensed under the Apache License, Version 2.0. You may obtain a
 
 ### Future (v2)
 
-⬜ Add test cases for comparing objects with prototype chain
+⬜ Prototype chain comparison
+⬜ Comprehesice type support
 ⬜ Provide CDN-hosted bundles in both UMD and ESM formats for direct browser usage
-⬜ Support complex types (Regex, Map, Set, functions)
-⬜ Add support for comparing objects with Symbol properties
 
 ### Future (v3)
 
