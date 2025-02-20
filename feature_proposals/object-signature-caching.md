@@ -6,18 +6,43 @@ Implement a caching mechanism for object signatures to optimize repeated compari
 will use WeakMap to store object signatures without modifying the original objects, making the comparison process more
 efficient for frequently compared objects while maintaining the library's zero side-effects principle.
 
+## Design Principles
+
+1. **Modular Architecture**
+
+    - Implement as a separate module (`signatureComparator.ts`)
+    - Keep core comparator.ts clean and focused
+    - Only add minimal interface changes to core module
+    - Follow the pattern of feature modules being opt-in via CompareOptions
+
+2. **Minimal Core Changes**
+
+    ```typescript
+    // Only add simple flag to CompareOptions
+    interface CompareOptions {
+        // ... existing options ...
+        enableSignatureCaching?: boolean;
+    }
+    ```
+
+3. **Module Integration**
+    - Use enhancer pattern to wrap core comparator
+    - Keep caching logic separate from core comparison
+    - Allow easy enabling/disabling of the feature
+
 ## Implementation Details
 
 ### Core Components
 
 1. **Signature Storage**
+
     - Use `WeakMap` to store object signatures
     - Automatic garbage collection when objects are no longer referenced
     - Works with any object type (plain objects, class instances, arrays, etc.)
 
-   ```typescript
-   private signatures = new WeakMap<object, string>();
-   ```
+    ```typescript
+    private signatures = new WeakMap<object, string>();
+    ```
 
 2. **Signature Generation**
 
@@ -50,63 +75,26 @@ efficient for frequently compared objects while maintaining the library's zero s
     - No special handling needed for different object types
     - Maintains current API compatibility
 
-## Usage Example
+## Integration Example
 
 ```typescript
-interface CacheOptions {
-    enabled: boolean;              // Enable/disable caching globally
-    maxAge?: number;              // Maximum age of cache entry in milliseconds
-    objectSizeLimit?: number;     // Maximum object size to cache (in terms of properties)
-    strategy?: 'always' | 'size-dependent' | 'frequency-based';  // Caching strategy
+// In signatureComparator.ts
+export function enhanceWithCaching(originalCompare: typeof compare) {
+    const cache = new SignatureCache();
+
+    return function cachedCompare(a: any, b: any, options: CompareOptions) {
+        if (!options.enableSignatureCaching) {
+            return originalCompare(a, b, options);
+        }
+
+        // Apply caching logic here
+        return cache.compareWithSignatures(a, b, options, originalCompare);
+    };
 }
 
-class ObjectComparator {
-    #signatures = new WeakMap<object, { signature: string, timestamp: number }>();
-    #options: CacheOptions;
-
-    constructor(options: CacheOptions = { enabled: false }) {
-        this.#options = options;
-    }
-
-    compare(obj1: object, obj2: object): boolean {
-        if (!this.#options.enabled) {
-            return this.#performFullComparison(obj1, obj2);
-        }
-
-        // Try comparing signatures first
-        const entry1 = this.#signatures.get(obj1);
-        const entry2 = this.#signatures.get(obj2);
-        
-        const now = Date.now();
-        const isValid = (entry: { signature: string, timestamp: number } | undefined) => 
-            entry && (!this.#options.maxAge || (now - entry.timestamp) <= this.#options.maxAge);
-
-        if (isValid(entry1) && isValid(entry2)) {
-            return entry1.signature === entry2.signature;
-        }
-
-        // Fall back to full comparison if needed
-        const result = this.#performFullComparison(obj1, obj2);
-        
-        if (result && this.#shouldCache(obj1)) {
-            const signature = this.#computeSignature(obj1);
-            const entry = { signature, timestamp: now };
-            this.#signatures.set(obj1, entry);
-            this.#signatures.set(obj2, entry);
-        }
-
-        return result;
-    }
-
-    #shouldCache(obj: object): boolean {
-        if (this.#options.strategy === 'size-dependent') {
-            const size = Object.keys(obj).length;
-            return size <= (this.#options.objectSizeLimit ?? Infinity);
-        }
-        // Add more strategies as needed
-        return true;
-    }
-}
+// Usage
+import { enhanceWithCaching } from "./signatureComparator";
+const compareWithCache = enhanceWithCaching(compare);
 ```
 
 ## Considerations
