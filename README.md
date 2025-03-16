@@ -157,41 +157,26 @@ Apache-2.0 © dominikj111
 This library is licensed under the Apache License, Version 2.0. You may obtain a copy of the License at
 <http://www.apache.org/licenses/LICENSE-2.0>
 
-## TODO List
+## Roadmap
 
-### Future (v2)
+### Version 2
 
-⬜ Prototype chain comparison
-⬜ Comprehesice type support
+⬜ Prototype chain comparison (see the [feature proposal](./feature_proposals/prototype-chain-comparison.md))
+⬜ Comprehesice type support (see the [feature proposal](./feature_proposals/comprehensive-type-support.md))
+⬜ Add performance benchmarks for different comparison scenarios
 ⬜ Provide CDN-hosted bundles in both UMD and ESM formats for direct browser usage
 
-### Future (v3)
-
-⬜ Enhance circular reference detection with WeakMap to store metadata (depth, path, corresponding object)  
-⬜ Implement object signature caching using WeakMap for optimizing repeated comparisons
-
-### Testing & CI
-
-✅ Check/test other runtimes and environments  
-✅ Improve Continuous Integration (automatic build, linting and testing)  
-
-### Performance
+### Version 3
 
 ⬜ Add performance regression tests
-⬜ Add performance benchmarks for different comparison scenarios  
-⬜ Document performance implications of different options
+⬜ Enhance circular reference detection with WeakMap to store metadata (depth, path, corresponding object)
+⬜ Implement object signature caching using WeakMap for optimizing repeated comparisons (see the [feature proposal](./feature_proposals/object-signature-caching.md))
 
-### Distribution
+### Version 4
 
-✅ Add [publint](https://publint.dev/) support
-✅ Add Changelog  
 ⬜ Publish to JSR (Deno Registry) for better Deno integration
-
-### Features & Improvements
-
-✅ Optimize circular reference detection by making it optional  
-⬜ Add input validation for comparison options  
-⬜ Add option for partial array matching (e.g., array contains subset)  
+⬜ Add input validation for comparison options
+⬜ Add option for partial array matching (e.g., array contains subset)
 ⬜ Add option for fuzzy string comparison
 
 ---
