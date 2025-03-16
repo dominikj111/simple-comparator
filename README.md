@@ -161,23 +161,24 @@ This library is licensed under the Apache License, Version 2.0. You may obtain a
 
 ### Version 2
 
-- [ ] Prototype chain comparison (see the [feature proposal](./feature_proposals/prototype-chain-comparison.md))
-- [ ] Comprehesice type support (see the [feature proposal](./feature_proposals/comprehensive-type-support.md))
-- [ ] Add performance benchmarks for different comparison scenarios
-- [ ] Provide CDN-hosted bundles in both UMD and ESM formats for direct browser usage
+- ⬜ Prototype chain comparison (see the [feature proposal](./feature_proposals/prototype-chain-comparison.md))
+- ⬜ Comprehesice type support (see the [feature proposal](./feature_proposals/comprehensive-type-support.md))
+- ⬜ Add performance benchmarks for different comparison scenarios
+- ⬜ Provide CDN-hosted bundles in both UMD and ESM formats for direct browser usage
 
 ### Version 3
 
-- [ ] Add performance regression tests
-- [ ] Enhance circular reference detection with WeakMap to store metadata (depth, path, corresponding object)
-- [ ] Implement object signature caching using WeakMap for optimizing repeated comparisons (see the [feature proposal](./feature_proposals/object-signature-caching.md))
+- ⬜ Add performance regression tests
+- ⬜ Enhance circular reference detection with WeakMap to store metadata (depth, path, corresponding object)
+- ⬜ Implement object signature caching using WeakMap for optimizing repeated comparisons (see the
+  [feature proposal](./feature_proposals/object-signature-caching.md))
 
 ### Version 4
 
-- [ ] Publish to JSR (Deno Registry) for better Deno integration
-- [ ] Add input validation for comparison options
-- [ ] Add option for partial array matching (e.g., array contains subset)
-- [ ] Add option for fuzzy string comparison
+- ⬜ Publish to JSR (Deno Registry) for better Deno integration
+- ⬜ Add input validation for comparison options
+- ⬜ Add option for partial array matching (e.g., array contains subset)
+- ⬜ Add option for fuzzy string comparison
 
 ---
 
