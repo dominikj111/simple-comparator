@@ -1,0 +1,4 @@
+git commit -m "chore: bump version to 1.2.2" -m "- Update package.json version to 1.2.2
+- Update CHANGELOG.md with 1.2.2 release notes
+- Update README.md with latest version references" package.json CHANGELOG.md README.md
+

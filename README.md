@@ -48,7 +48,7 @@ import {
     compare,
     same,
     different,
-} from "https://raw.githubusercontent.com/dominikj111/simple-comparator/refs/tags/v1.2.1/mod.js";
+} from "https://raw.githubusercontent.com/dominikj111/simple-comparator/refs/tags/v1.2.2/mod.js";
 ```
 
 Or from your local files:
