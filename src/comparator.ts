@@ -94,10 +94,26 @@ export interface BasicCompareObject {
 
 export type CompareType = BasicCompareObject | BasicCompareType | (BasicCompareObject | BasicCompareType)[];
 
+type TypeCheckerFunction = (_a?: CompareType, _b?: CompareType) => boolean;
+
+interface TypeChecker {
+	bothAreSameType: TypeCheckerFunction;
+	isSimpleType: TypeCheckerFunction;
+	bothAreNulls: TypeCheckerFunction;
+	isNumber: TypeCheckerFunction;
+	isNotNullObject: TypeCheckerFunction;
+	bothAreNumbers: TypeCheckerFunction;
+	bothAreNumbersAndNaNs: TypeCheckerFunction;
+	bothAreNumbersAndOnlyOneIsNaN: TypeCheckerFunction;
+	bothAreWrapperTypes: (_a?: CompareType, _b?: CompareType) => boolean;
+	isComparableObject: (_a?: CompareType) => boolean;
+	bothAreComparableObjects: (_a?: CompareType, _b?: CompareType) => boolean;
+}
+
 /**
  * Collection of type checking utilities used internally by the comparison functions.
  */
-export const typeChecker: Record<string, (_a?: CompareType, _b?: CompareType) => boolean> = {
+export const typeChecker: TypeChecker = {
 	/** Checks if both values are of the same type and array status */
 	bothAreSameType: (a, b) => typeof a === typeof b && Array.isArray(a) === Array.isArray(b),
 
@@ -209,8 +225,8 @@ function compareObjects<T extends BasicCompareObject>(
 	for (let i = 0; i < keysA.length; i += 1) {
 		if (
 			!internalCompare(
-				a[keysA[i]],
-				b[keysA[i]],
+				a[keysA[i]!],
+				b[keysA[i]!],
 				undefined,
 				undefined,
 				shallow,

@@ -1,15 +1,23 @@
 {
 	"compilerOptions": {
 		"target": "ES2022",
+		"module": "ES2022",
+		"allowJs": false,
+		"checkJs": false,
+		"skipLibCheck": true,
+		"noEmit": true,
+		"sourceMap": false,
+
+		"lib": ["ES2022", "DOM"],
+		"baseUrl": ".",
+
 		"allowSyntheticDefaultImports": true,
 		"alwaysStrict": true,
-		"noImplicitAny": false,
-		"noImplicitThis": false,
+		"noImplicitAny": true,
+		"noImplicitThis": true,
 		"strictNullChecks": true,
 		"strictFunctionTypes": true,
-		"allowJs": false,
-		"sourceMap": true,
-		"lib": ["ES2022", "DOM"],
-		"baseUrl": "."
-	}
+		"noUncheckedIndexedAccess": true
+	},
+	"exclude": ["node_modules"]
 }
