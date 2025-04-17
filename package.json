@@ -11,7 +11,7 @@
 			"types": "./index.ts",
 			"import": {
 				"types": "./index.ts",
-				"default": "./dist_es6/index.js"
+				"default": "./index.ts"
 			},
 			"require": {
 				"types": "./index.cts",
