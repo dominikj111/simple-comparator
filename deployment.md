@@ -50,6 +50,7 @@ If dist folders changed, commit dist build separatelly.
 
     Where the 'vX.Y.Z' is the version number from package.json.
 
+    Gitlogs:
     "
 
 3. **Commit version changes**:
