@@ -85,7 +85,3 @@ If dist folders changed, commit dist build separatelly.
     ```bash
     npm view simple-comparator
     ```
-
-## Post-deployment
-
-- Create a GitHub release with the same notes as the git tag
