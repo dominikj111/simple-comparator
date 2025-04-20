@@ -29,19 +29,19 @@
 		"mod.ts"
 	],
 	"scripts": {
-		"build": "rm -rf dist_commonjs/* dist_es6/* && tsc --project tsconfig-commonjs.json && tsc --project tsconfig-es6.json && npm run minify:all && npm run rename-cjs && npm run fix-maps",
+		"build": "rm -rf dist_commonjs/* dist_es6/* && tsc --project tsconfig-commonjs.json && tsc --project tsconfig-es6.json && pnpm minify:all && pnpm rename-cjs && pnpm fix-maps",
 		"rename-cjs": "find dist_commonjs -name '*.js' -exec sh -c 'mv \"$1\" \"${1%.js}.cjs\"' _ {} \\;",
 		"fix-maps": "find dist_commonjs -name '*.map' -exec sh -c 'mv \"$1\" \"${1%.js.map}.cjs.map\"' _ {} \\;",
-		"minify:all": "npm run minify:commonjs && npm run minify:es6",
+		"minify:all": "pnpm minify:commonjs && pnpm minify:es6",
 		"minify:commonjs": "for file in $(find dist_commonjs -name '*.js'); do terser \"$file\" -c -m --source-map \"content='${file}.map',url='$(basename ${file%.*}).cjs.map'\" -o \"$file\"; done",
 		"minify:es6": "for file in $(find dist_es6 -name '*.js'); do terser \"$file\" -c -m --source-map \"content='${file}.map',url='$(basename ${file}).map'\" -o \"$file\"; done",
-		"test": "npm run lint:all && jest && jest -c jest-node.config.json && npm run test:deno",
+		"test": "pnpm lint:all && jest && jest -c jest-node.config.json && pnpm test:deno",
 		"test:coverage": "jest --coverage",
 		"test:deno": "command -v deno >/dev/null 2>&1 && (deno test --config tsconfig-deno.json || exit 1) || (echo '\nℹ️  \u001b[33mDeno is not installed. Skipping Deno tests.\u001b[0m' && exit 0)",
 		"lint": "eslint .",
 		"lint:md": "markdownlint \"**/*.md\" --fix",
 		"format": "prettier --check \"**/*.{ts,js,json,md}\"",
-		"lint:all": "npm run lint && npm run lint:md && npm run publint && npm run format",
+		"lint:all": "pnpm lint && pnpm lint:md && pnpm publint && pnpm format",
 		"publint": "npx publint",
 		"lint:fix": "eslint . --fix",
 		"format:fix": "prettier --write \"**/*.{ts,js,json,md}\""
