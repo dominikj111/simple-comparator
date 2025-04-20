@@ -38,10 +38,11 @@
 		"test": "pnpm lint:all && jest && jest -c jest-node.config.json && pnpm test:deno",
 		"test:coverage": "jest --coverage",
 		"test:deno": "command -v deno >/dev/null 2>&1 && (deno test --config tsconfig-deno.json || exit 1) || (echo '\nℹ️  \u001b[33mDeno is not installed. Skipping Deno tests.\u001b[0m' && exit 0)",
+		"tsc:check": "tsc --noEmit",
 		"lint": "eslint .",
 		"lint:md": "markdownlint \"**/*.md\" --fix",
 		"format": "prettier --check \"**/*.{ts,js,json,md}\"",
-		"lint:all": "pnpm lint && pnpm lint:md && pnpm publint && pnpm format",
+		"lint:all": "pnpm tsc:check && pnpm lint && pnpm lint:md && pnpm publint && pnpm format",
 		"publint": "npx publint",
 		"lint:fix": "eslint . --fix",
 		"format:fix": "prettier --write \"**/*.{ts,js,json,md}\""

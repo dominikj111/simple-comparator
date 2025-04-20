@@ -2,9 +2,7 @@
 	"deno.enable": false,
 	"deno.lint": false,
 	"deno.unstable": [],
-	"jest.jestCommandLine": "pnpm jest",
 	"eslint.enable": true,
 	"eslint.useFlatConfig": true,
-	"eslint.validate": ["javascript", "typescript"],
-	"jest.rootPath": "."
+	"eslint.validate": ["javascript", "typescript"]
 }

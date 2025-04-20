@@ -30,7 +30,10 @@ export default [
 			prettier: prettier,
 		},
 		rules: {
+			...tseslint.configs.recommended.rules,
+			...eslintConfigPrettier.rules,
 			"prettier/prettier": "warn",
+			"@typescript-eslint/no-unused-vars": "off",
 			"no-unused-vars": [
 				"warn",
 				{
@@ -39,8 +42,6 @@ export default [
 					caughtErrorsIgnorePattern: "^_",
 				},
 			],
-			...tseslint.configs.recommended.rules,
-			...eslintConfigPrettier.rules,
 		},
 	},
 	{
