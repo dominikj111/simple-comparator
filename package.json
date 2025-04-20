@@ -1,6 +1,6 @@
 {
 	"name": "simple-comparator",
-	"version": "1.2.2",
+	"version": "1.2.3",
 	"description": "A production-ready deep equality comparison library for JavaScript and TypeScript, supporting complex objects, arrays, and primitive types with circular reference detection. Works seamlessly across Node.js, Deno, and browser environments.",
 	"main": "dist_commonjs/index.cjs",
 	"module": "dist_es6/index.js",

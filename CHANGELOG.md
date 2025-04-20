@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.3] - 2025-04-20
+
+### Fixed
+
+    - Fixed VSCode Jest plugin integration
+    - Fixed unit tests
+    - Fixed ESLint configuration
+    - Fixed import in TypeScript module
+    - Fixed TypeScript configuration (no emitting build issue)
+
+### Changed
+
+    - Moved to pnpm package manager
+    - Improved TypeScript configuration (more strict settings)
+    - Added TypeScript check script
+    - Updated deployment steps documentation
+
+### Improved
+
+    - Improved build process with rebuild functionality
+
 ## [1.2.2] - 2025-03-16
 
 ### Changed
