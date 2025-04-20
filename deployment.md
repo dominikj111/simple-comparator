@@ -7,6 +7,8 @@ This document outlines the steps to deploy the simple-comparator package to npm.
 - Build the package first: `pnpm build`
 - Ensure all tests pass: `pnpm test` (includes lint checks - eslint, tsc, publint, unit tests, and environmental tests)
 
+Ensure correct `git config --local user.email` and `git config --local user.name` are set.
+
 If dist folders changed, commit dist build separatelly.
 
 ## Deployment Steps
