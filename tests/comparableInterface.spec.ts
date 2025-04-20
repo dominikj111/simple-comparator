@@ -2,7 +2,9 @@ import { compare, Comparable } from "../src/comparator";
 
 class Point implements Comparable<Point> {
 	constructor(
+		// eslint-disable-next-line no-unused-vars
 		public x: number,
+		// eslint-disable-next-line no-unused-vars
 		public y: number,
 	) {}
 
@@ -13,7 +15,9 @@ class Point implements Comparable<Point> {
 
 class ComplexNumber implements Comparable<ComplexNumber> {
 	constructor(
+		// eslint-disable-next-line no-unused-vars
 		public real: number,
+		// eslint-disable-next-line no-unused-vars
 		public imaginary: number,
 	) {}
 
@@ -27,8 +31,11 @@ class ComplexNumber implements Comparable<ComplexNumber> {
 
 class Person implements Comparable<Person> {
 	constructor(
+		// eslint-disable-next-line no-unused-vars
 		public name: string,
+		// eslint-disable-next-line no-unused-vars
 		public age: number,
+		// eslint-disable-next-line no-unused-vars
 		private ssn: string, // private field should be included in comparison
 	) {}
 
@@ -39,7 +46,9 @@ class Person implements Comparable<Person> {
 
 class Vector2D implements Comparable<Vector2D> {
 	constructor(
+		// eslint-disable-next-line no-unused-vars
 		public x: number,
+		// eslint-disable-next-line no-unused-vars
 		public y: number,
 	) {}
 
@@ -265,6 +274,7 @@ describe("Comparable Interface Tests", () => {
 
 	describe("Object.keys() and Methods", () => {
 		class TestClass {
+			// eslint-disable-next-line no-unused-vars
 			constructor(public x: number) {}
 
 			public someMethod() {
