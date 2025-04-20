@@ -52,8 +52,7 @@ If dist folders changed, commit dist build separatelly.
 
     Where the 'vX.Y.Z' is the version number from package.json.
 
-    Gitlogs:
-    "
+    Gitlogs: "
 
 3. **Commit version changes**:
 
@@ -75,10 +74,6 @@ If dist folders changed, commit dist build separatelly.
 6. **Publish to npm**:
 
     ```bash
-    # Login to npm if not already logged in
-    npm login
-
-    # Publish the package
     npm publish
     ```
 
