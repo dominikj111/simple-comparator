@@ -30,7 +30,7 @@ export function useStableState<T>(value: T): T {
   // This avoids expensive deep comparisons on every render when the input is the same reference
   if (lastValueRef.current !== value) {
     // Reference changed, now do the expensive deep comparison
-    if (!same(ref.current, value)) {
+    if (!same(ref.current as any, value as any)) {
       ref.current = value;
     }
     lastValueRef.current = value;

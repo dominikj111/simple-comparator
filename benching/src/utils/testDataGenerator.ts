@@ -121,7 +121,7 @@ export function generateTestObject(size: ObjectSize): any {
       
       // Shuffle keys but keep same values
       const shuffled = [...keys].sort(() => Math.random() - 0.5);
-      shuffled.forEach((key, idx) => {
+      shuffled.forEach((key) => {
         const originalIndex = keys.indexOf(key);
         obj[key] = values[originalIndex]; // Same values, different key order
       });
