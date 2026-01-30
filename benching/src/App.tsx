@@ -52,17 +52,18 @@ function App() {
       method: 'simple-comparator',
       options: { detectCircular: true }
     },
+    { id: 19, objectSize: 'circular', iterations: 5000, method: 'json-stringify' },
     
     // REAL-WORLD OPTIMIZATION - useStableState pattern
     
     // Same reference (no re-render needed) - useStableState skips comparison!
-    { id: 19, objectSize: 'stable-same-ref', iterations: 100000, method: 'simple-comparator-stable' },
-    { id: 20, objectSize: 'stable-same-ref', iterations: 100000, method: 'json-stringify-always' },
-    { id: 21, objectSize: 'stable-same-ref', iterations: 100000, method: 'reference-equality' },
+    { id: 20, objectSize: 'stable-state-hook-same-ref', iterations: 100000, method: 'simple-comparator-stable' },
+    { id: 21, objectSize: 'stable-state-hook-same-ref', iterations: 100000, method: 'json-stringify-always' },
+    { id: 22, objectSize: 'stable-state-hook-same-ref', iterations: 100000, method: 'reference-equality' },
     
     // New reference but same content (common in React props)
-    { id: 22, objectSize: 'stable-new-ref', iterations: 10000, method: 'simple-comparator-stable' },
-    { id: 23, objectSize: 'stable-new-ref', iterations: 10000, method: 'json-stringify-always' },
+    { id: 23, objectSize: 'stable-state-hook-new-ref', iterations: 10000, method: 'simple-comparator-stable' },
+    { id: 24, objectSize: 'stable-state-hook-new-ref', iterations: 10000, method: 'json-stringify-always' },
   ];
 
   return (

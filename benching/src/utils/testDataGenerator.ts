@@ -1,4 +1,4 @@
-export type ObjectSize = 'small' | 'medium' | 'large' | 'huge' | 'selective' | 'key-order' | 'circular' | 'stable-same-ref' | 'stable-new-ref';
+export type ObjectSize = 'small' | 'medium' | 'large' | 'huge' | 'selective' | 'key-order' | 'circular' | 'stable-state-hook-same-ref' | 'stable-state-hook-new-ref';
 
 export function generateTestObject(size: ObjectSize): any {
   switch (size) {
@@ -111,12 +111,19 @@ export function generateTestObject(size: ObjectSize): any {
     }
     
     case 'key-order': {
-      // Same object with keys in different order
-      const keys = ['field1', 'field2', 'field3', 'field4', 'field5'];
-      const shuffled = [...keys].sort(() => Math.random() - 0.5);
+      // Same values, but keys in consistently different order
+      // This demonstrates that simple-comparator handles key ordering correctly
+      // while JSON.stringify produces different strings
       const obj: any = {};
+      // Always return same values, just in random key order per call
+      const keys = ['field1', 'field2', 'field3', 'field4', 'field5'];
+      const values = ['apple', 'banana', 'cherry', 'date', 'elderberry'];
+      
+      // Shuffle keys but keep same values
+      const shuffled = [...keys].sort(() => Math.random() - 0.5);
       shuffled.forEach((key, idx) => {
-        obj[key] = `value${idx}`;
+        const originalIndex = keys.indexOf(key);
+        obj[key] = values[originalIndex]; // Same values, different key order
       });
       return obj;
     }
@@ -135,12 +142,12 @@ export function generateTestObject(size: ObjectSize): any {
       return circular;
     }
     
-    case 'stable-same-ref':
+    case 'stable-state-hook-same-ref':
       // Simulates stable reference (no re-render needed)
       // Returns the SAME object reference
       return stableObjectCache;
     
-    case 'stable-new-ref': {
+    case 'stable-state-hook-new-ref': {
       // Simulates new reference but same content (common in React)
       // Create new objects each time to simulate React prop recreation
       return {

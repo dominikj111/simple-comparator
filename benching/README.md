@@ -41,8 +41,8 @@ pnpm build
 - **selective** - Wide object (100+ fields) with selective comparison
 - **key-order** - Objects with different key ordering (JSON.stringify fails)
 - **circular** - Circular references (JSON.stringify throws error)
-- **stable-same-ref** - Same reference optimization (useStableState pattern)
-- **stable-new-ref** - New reference, same content (common React pattern)
+- **stable-state-hook-same-ref** - Same reference optimization (useStableState pattern)
+- **stable-state-hook-new-ref** - New reference, same content (common React pattern)
 
 ### Execution Modes
 
@@ -56,11 +56,13 @@ pnpm build
 
 ## Features
 
+- ✅ Grouped comparison tables by scenario with clear winners
+- ✅ Medal rankings (🥇🥈🥉) showing performance hierarchy
+- ✅ Relative speed indicators (1x, 2x, etc.)
 - ✅ Live progress tracking with status indicators
 - ✅ Serial and parallel execution modes
 - ✅ Responsive design with dark/light mode support
 - ✅ Built with React Compiler for optimal performance
-- ✅ Real-world testing using actual React `useEffect` behavior
 
 ## Implementation Details
 
