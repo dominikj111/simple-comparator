@@ -1,75 +1,103 @@
-# React + TypeScript + Vite
+# simple-comparator Benchmark Suite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Performance benchmarking application comparing deep equality comparison methods for JavaScript objects.
 
-Currently, two official plugins are available:
+## Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Benchmarks comparison methods showing both raw performance and real-world advantages:
 
-## React Compiler
+**Comparison Methods:**
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- **simple-comparator** - Deep equality with `same()` function
+- **simple-comparator-selective** - Compares only specified fields (performance optimization)
+- **simple-comparator-stable** - useStableState pattern with reference optimization
+- **JSON.stringify** - Common but limited workaround
+- **reference-equality** - JavaScript's default `===` comparison
 
-Note: This will impact Vite dev & build performances.
+## Getting Started
 
-## Expanding the ESLint configuration
+```bash
+# Install dependencies
+pnpm install
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+# Start development server
+pnpm dev
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Build for production
+pnpm build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Test Scenarios
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Basic Performance Tests
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **small** - Simple 4-field object
+- **medium** - Nested object with arrays (10 items)
+- **large** - Complex object (50 users, 100 posts with comments)
+- **huge** - Deeply nested arrays (200 items, 5 levels deep)
+
+### Advantage Tests (where simple-comparator excels)
+
+- **selective** - Wide object (100+ fields) with selective comparison
+- **key-order** - Objects with different key ordering (JSON.stringify fails)
+- **circular** - Circular references (JSON.stringify throws error)
+- **stable-same-ref** - Same reference optimization (useStableState pattern)
+- **stable-new-ref** - New reference, same content (common React pattern)
+
+### Execution Modes
+
+- **Serial** (recommended) - Tests run sequentially, prevents UI freeze
+- **Parallel** - All tests run simultaneously for faster results
+
+### Metrics Measured
+
+- **Execution time** (milliseconds)
+- **Time per 1000 operations** (normalized comparison)
+
+## Features
+
+- ✅ Live progress tracking with status indicators
+- ✅ Serial and parallel execution modes
+- ✅ Responsive design with dark/light mode support
+- ✅ Built with React Compiler for optimal performance
+- ✅ Real-world testing using actual React `useEffect` behavior
+
+## Implementation Details
+
+**How Benchmarks Work:**
+
+- Each test runs comparison operations in a loop (500-100,000 iterations)
+- Tests execute asynchronously via `setTimeout` to prevent UI blocking
+- Measurements use `performance.now()` for high-precision timing
+- Test objects regenerated with `Math.random()` to prevent engine optimization
+
+**Architecture:**
+
+- **BenchmarkRunner** - Orchestrates execution, manages state, displays results table
+- **Benchmark** - Individual test runner executing comparison iterations
+- **testDataGenerator** - Creates objects of varying size/complexity
+- **types.ts** - TypeScript definitions for configs and results
+
+## Tech Stack
+
+- React 19 with React Compiler (babel-plugin-react-compiler)
+- TypeScript
+- Vite (build tool)
+- simple-comparator library (parent project)
+
+## Results Interpretation
+
+**Lower time = Better performance**
+
+Metrics show:
+
+- Raw execution speed (total ms)
+- Normalized performance (ms per 1000 operations)
+
+**Key insights:**
+
+- Selective comparison reduces cost on large objects
+- useStableState pattern optimizes React re-render scenarios
+- simple-comparator handles edge cases (key ordering, circular refs) that JSON.stringify cannot
+
+Note: Results vary by browser, hardware, and JavaScript engine optimizations.
