@@ -18,6 +18,7 @@ export function BenchmarkRunner({ mode, benchmarks }: BenchmarkRunnerProps) {
   );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
+  const [activeIndividual, setActiveIndividual] = useState<number | null>(null);
 
   const handleComplete = (result: BenchmarkResult) => {
     setResults(prev =>
@@ -28,29 +29,52 @@ export function BenchmarkRunner({ mode, benchmarks }: BenchmarkRunnerProps) {
       // Move to next benchmark
       setCurrentIndex(prev => prev + 1);
     }
+    
+    // Clear individual run state
+    if (activeIndividual === result.id) {
+      setActiveIndividual(null);
+    }
   };
 
   const startBenchmarks = () => {
-    setIsRunning(true);
-    setCurrentIndex(0);
-    setResults(
-      benchmarks.map(config => ({
-        id: config.id,
-        config,
-        status: 'pending' as const,
-      }))
-    );
+    // If already running or completed, reset and start again
+    if (isRunning || allComplete) {
+      setIsRunning(false);
+      setCurrentIndex(0);
+      setResults(
+        benchmarks.map(config => ({
+          id: config.id,
+          config,
+          status: 'pending' as const,
+        }))
+      );
+      // Use setTimeout to ensure state updates before starting
+      setTimeout(() => {
+        setIsRunning(true);
+      }, 50);
+    } else {
+      setIsRunning(true);
+      setCurrentIndex(0);
+      setResults(
+        benchmarks.map(config => ({
+          id: config.id,
+          config,
+          status: 'pending' as const,
+        }))
+      );
+    }
   };
 
-  const resetBenchmarks = () => {
-    setIsRunning(false);
-    setCurrentIndex(0);
-    setResults(
-      benchmarks.map(config => ({
-        id: config.id,
-        config,
-        status: 'pending' as const,
-      }))
+  const runScenario = (scenario: string) => {
+    // Get all benchmark IDs for this scenario
+    const scenarioIds = benchmarks
+      .filter(b => b.objectSize === scenario)
+      .map(b => b.id);
+    
+    // Reset benchmarks in this scenario and mark as running
+    setActiveIndividual(scenarioIds[0]); // Track first one to trigger rendering
+    setResults(prev =>
+      prev.map(r => scenarioIds.includes(r.id) ? { id: r.id, config: r.config, status: 'running' as const } : r)
     );
   };
 
@@ -75,6 +99,13 @@ export function BenchmarkRunner({ mode, benchmarks }: BenchmarkRunnerProps) {
   const allComplete = results.every(r => r.status === 'completed' || r.status === 'error');
   const hasStarted = isRunning;
 
+  // Stop running when all benchmarks are complete
+  useEffect(() => {
+    if (isRunning && allComplete) {
+      setIsRunning(false);
+    }
+  }, [isRunning, allComplete]);
+
   return (
     <div className="benchmark-runner">
       <div className="benchmark-controls">
@@ -82,23 +113,15 @@ export function BenchmarkRunner({ mode, benchmarks }: BenchmarkRunnerProps) {
         <div className="control-buttons">
           <button
             onClick={startBenchmarks}
-            disabled={isRunning}
             className="btn-primary"
           >
-            Start {mode === 'serial' ? 'Serial' : 'Parallel'} Test
-          </button>
-          <button
-            onClick={resetBenchmarks}
-            disabled={!hasStarted}
-            className="btn-secondary"
-          >
-            Reset
+            {isRunning ? `Running ${mode === 'serial' ? 'Sequentially' : 'Simultaneously'}...` : allComplete ? 'Run All Again' : 'Run All'}
           </button>
         </div>
       </div>
 
       <div className="results-container">
-        {renderComparisonTables(results)}
+        {renderComparisonTables(results, runScenario)}
       </div>
 
       {/* Render active benchmarks */}
@@ -119,6 +142,22 @@ export function BenchmarkRunner({ mode, benchmarks }: BenchmarkRunnerProps) {
           active={true}
           onComplete={handleComplete}
         />
+      )}
+
+      {/* Render scenario benchmarks if running individually */}
+      {activeIndividual !== null && !isRunning && (
+        <>
+          {benchmarks
+            .filter(b => results.find(r => r.id === b.id)?.status === 'running')
+            .map(config => (
+              <Benchmark
+                key={`scenario-${config.id}`}
+                config={config}
+                active={true}
+                onComplete={handleComplete}
+              />
+            ))}
+        </>
       )}
 
       {allComplete && hasStarted && (
@@ -208,7 +247,7 @@ function getScenarioDisplayName(scenario: string): string {
   return names[scenario] || scenario;
 }
 
-function renderComparisonTables(results: BenchmarkResult[]) {
+function renderComparisonTables(results: BenchmarkResult[], runScenario: (scenario: string) => void) {
   const grouped = groupResultsByScenario(results);
   
   return Object.entries(grouped).map(([scenario, scenarioResults]) => {
@@ -221,10 +260,20 @@ function renderComparisonTables(results: BenchmarkResult[]) {
     
     const fastestTime = sorted[0]?.timeMs;
     const allComplete = sorted.every(r => r.status === 'completed' || r.status === 'error');
+    const anyRunning = sorted.some(r => r.status === 'running');
     
     return (
       <div key={scenario} className="scenario-group">
-        <h3 className="scenario-title">{getScenarioDisplayName(scenario)}</h3>
+        <div className="scenario-header">
+          <h3 className="scenario-title">{getScenarioDisplayName(scenario)}</h3>
+          <button
+            className="btn-run-scenario"
+            onClick={() => runScenario(scenario)}
+            disabled={anyRunning}
+          >
+            {anyRunning ? 'Running...' : 'Run Test'}
+          </button>
+        </div>
         <table className="comparison-table">
           <thead>
             <tr>
@@ -233,7 +282,7 @@ function renderComparisonTables(results: BenchmarkResult[]) {
               <th className="time-col">Time (ms)</th>
               <th className="per1k-col">ms/1K ops</th>
               <th className="relative-col">vs Fastest</th>
-              <th className="status-col"></th>
+              <th className="status-col">Status</th>
             </tr>
           </thead>
           <tbody>

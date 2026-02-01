@@ -76,28 +76,62 @@
 
 /* New comparison table styles */
 .results-container {
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(900px, 1fr));
+  gap: 1.5rem;
   width: 100%;
-  max-width: 1100px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
 .scenario-group {
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.02);
+  background: #1a1a1a;
+  border: 1px solid rgba(100, 108, 255, 0.2);
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.scenario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background: rgba(100, 108, 255, 0.15);
+  border-bottom: 1px solid rgba(100, 108, 255, 0.2);
 }
 
 .scenario-title {
-  padding: 1rem 1.5rem;
   margin: 0;
-  background: rgba(100, 108, 255, 0.08);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: #61dafb;
   letter-spacing: 0.02em;
+}
+
+.btn-run-scenario {
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 4px;
+  border: 1px solid rgba(100, 108, 255, 0.4);
+  background: rgba(100, 108, 255, 0.1);
+  color: #61dafb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  min-width: 90px;
+}
+
+.btn-run-scenario:hover:not(:disabled) {
+  background: rgba(100, 108, 255, 0.2);
+  border-color: #61dafb;
+  transform: translateY(-1px);
+}
+
+.btn-run-scenario:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .comparison-table {
@@ -107,28 +141,29 @@
 }
 
 .comparison-table thead {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(100, 108, 255, 0.08);
 }
 
 .comparison-table th {
-  padding: 0.75rem 1rem;
+  padding: 0.6rem 1rem;
   text-align: left;
   font-weight: 600;
   text-transform: uppercase;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.5);
+  color: #61dafb;
   border: none;
 }
 
 .comparison-table td {
-  padding: 0.875rem 1rem;
+  padding: 0.75rem 1rem;
   border: none;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .comparison-table tbody tr {
   transition: background-color 0.15s ease;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .comparison-table tbody tr:last-child {
@@ -136,15 +171,15 @@
 }
 
 .comparison-table tbody tr:hover {
-  background-color: rgba(100, 108, 255, 0.04);
+  background-color: rgba(100, 108, 255, 0.08);
 }
 
 .comparison-table tbody tr.rank-1 {
-  background-color: rgba(76, 175, 80, 0.08);
+  background-color: rgba(76, 175, 80, 0.1);
 }
 
 .comparison-table tbody tr.rank-1:hover {
-  background-color: rgba(76, 175, 80, 0.12);
+  background-color: rgba(76, 175, 80, 0.15);
 }
 
 .comparison-table tbody tr.status-running {
@@ -161,7 +196,7 @@
 }
 
 .rank-col {
-  width: 70px;
+  width: 60px;
   text-align: center !important;
 }
 
@@ -181,16 +216,16 @@
   text-align: right !important;
   font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .relative-col {
-  width: 15%;
+  width: 13%;
   text-align: right !important;
 }
 
 .status-col {
-  width: 50px;
+  width: 60px;
   text-align: center !important;
   font-size: 1.2rem;
 }
@@ -580,6 +615,12 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .results-container {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 1024px) {
   .comparison-table {
     font-size: 0.9rem;
@@ -587,11 +628,10 @@
 
   .comparison-table th,
   .comparison-table td {
-    padding: 0.75rem 0.75rem;
+    padding: 0.65rem 0.75rem;
   }
 
-  .per1k-col,
-  .relative-col {
+  .per1k-col {
     display: none;
   }
 }
@@ -602,8 +642,8 @@
   }
 
   .scenario-title {
-    font-size: 1rem;
-    padding: 1rem 1.25rem;
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
   }
 
   .comparison-table {
@@ -612,11 +652,33 @@
 
   .comparison-table th,
   .comparison-table td {
-    padding: 0.625rem 0.5rem;
+    padding: 0.5rem 0.4rem;
   }
 
   .rank-col {
-    width: 60px;
+    width: 50px;
+  }
+
+  .relative-col {
+    display: none;
+  }
+
+  .method-col {
+    font-size: 0.8rem;
+  }
+
+  .scenario-header {
+    padding: 0.6rem 1rem;
+  }
+
+  .scenario-title {
+    font-size: 0.85rem;
+  }
+
+  .btn-run-scenario {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.75rem;
+    min-width: 70px;
   }
 
   .method-col {
