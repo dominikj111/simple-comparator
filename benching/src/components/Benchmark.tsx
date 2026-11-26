@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { BenchmarkConfig, BenchmarkResult } from '../types';
 import { generateTestObject } from '../utils/testDataGenerator';
-import { same } from '../../../src/comparator';
+import { same } from 'simple-comparator';
 
 interface BenchmarkProps {
   config: BenchmarkConfig;

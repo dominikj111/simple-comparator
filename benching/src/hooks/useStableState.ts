@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { same } from "../../../src/comparator";
+import { same } from "simple-comparator";
 
 /**
  * Returns a stable reference to the value that only updates when the deep comparison fails.
