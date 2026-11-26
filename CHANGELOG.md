@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.4] - 2026-11-26
+
+### Fixed
+
+    - Fixed the ESM entry point pointing at TypeScript source, which made `import` fail in Node.js
+      (`ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING`)
+    - Fixed the CommonJS entry point requiring a path the build had already renamed
+      (`Cannot find module './src/comparator'`)
+    - Fixed TypeScript resolution under `moduleResolution: nodenext`; emitted imports now carry the
+      explicit `.js` extension
+    - Fixed the Deno type check, which failed on the deprecated `baseUrl` compiler option
+
+### Changed
+
+    - CommonJS output keeps `.js` file names with a `"type": "commonjs"` marker instead of being
+      renamed to `.cjs` after the build
+    - Moved `benching` into a pnpm workspace, so one install covers both projects and the benchmark
+      consumes the package by name instead of reaching into `src/`
+    - Scoped the library's TypeScript, ESLint, Prettier and markdownlint configuration so the
+      benchmark application no longer blocks `pnpm test`
+    - Removed the unused `baseUrl` option, preparing for TypeScript 7
+    - Declared `engines.node` (`>=18`); installs on older Node now warn
+
+### Improved
+
+    - Added a packaging test that installs the published tarball and exercises ESM, CommonJS and
+      `nodenext` type resolution — the suite previously tested source only
+    - Deno test failures now fail `pnpm test` instead of being reported as "Deno is not installed"
+
 ## [1.2.3] - 2025-04-20
 
 ### Fixed
