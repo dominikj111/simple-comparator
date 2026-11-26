@@ -6,6 +6,7 @@
 		"module": "ES2022",
 		"moduleResolution": "Bundler",
 		"resolveJsonModule": true,
-		"outDir": "./dist_es6"
+		"outDir": "./dist_es6",
+		"declaration": true
 	}
 }
