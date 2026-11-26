@@ -61,6 +61,35 @@ function expectCommand(result, expectedOutput) {
 	});
 }
 
+/**
+ * Type-check a consumer file against the published declarations.
+ *
+ * `strict` is a parameter because the published types previously pointed at
+ * TypeScript source, which made the result depend on the consumer's own flags:
+ * an unused `@ts-expect-error` failed in non-strict projects.
+ */
+function typecheck(file, { strict = false } = {}) {
+	const tsc = join(repoRoot, "node_modules", "typescript", "bin", "tsc");
+	if (!existsSync(tsc)) {
+		throw new Error("TypeScript is not installed in this repo — run `pnpm install` before the test suite.");
+	}
+
+	return run(
+		process.execPath,
+		[
+			tsc,
+			"--noEmit",
+			...(strict ? ["--strict"] : []),
+			"--module",
+			"nodenext",
+			"--moduleResolution",
+			"nodenext",
+			file,
+		],
+		{ cwd: consumerDir },
+	);
+}
+
 /** Setup failures abort the suite, so report the tool output instead of an assertion diff. */
 function expectSetup(label, result) {
 	if (result.exitCode !== 0) {
@@ -93,6 +122,28 @@ beforeAll(() => {
 	const installedDir = join(consumerDir, "node_modules", packageName);
 	mkdirSync(installedDir, { recursive: true });
 	expectSetup("tar", run("tar", ["-xzf", tarball, "--strip-components=1", "-C", installedDir]));
+
+	writeConsumerFile(
+		"types-esm.mts",
+		[
+			`import { compare, same, different } from "${packageName}";`,
+			"",
+			"const results: boolean[] = [compare({ a: 1 }, { a: 1 }), same([1], [1]), different(1, 2)];",
+			"export { results };",
+			"",
+		].join("\n"),
+	);
+
+	writeConsumerFile(
+		"types-cjs.cts",
+		[
+			`import { compare, same } from "${packageName}";`,
+			"",
+			"const equal: boolean = compare({ a: 1 }, { a: 1 }) && same([1], [1]);",
+			"export { equal };",
+			"",
+		].join("\n"),
+	);
 
 	// 3. A minimal modern consumer project.
 	writeConsumerFile(
@@ -134,34 +185,18 @@ describe("published package resolves in a Node.js consumer", () => {
 		expectCommand(run(process.execPath, ["cjs-check.cjs"], { cwd: consumerDir }), "true,true,true");
 	});
 
-	it("type-checks under `moduleResolution: nodenext`", () => {
-		const tsc = join(repoRoot, "node_modules", "typescript", "bin", "tsc");
-		if (!existsSync(tsc)) {
-			throw new Error("TypeScript is not installed in this repo — run `pnpm install` before the test suite.");
-		}
+	// The types must stand on their own: consumers compile the published
+	// declarations with their own flags, so a `.ts` types entry would leak our
+	// source -- and its `@ts-expect-error` directives -- into their build.
+	it("type-checks an ESM consumer with `strict`", () => {
+		expectCommand(typecheck("types-esm.mts", { strict: true }), "");
+	});
 
-		writeConsumerFile(
-			"types-check.mts",
-			[
-				`import { compare, same, different } from "${packageName}";`,
-				"",
-				"const results: boolean[] = [compare({ a: 1 }, { a: 1 }), same([1], [1]), different(1, 2)];",
-				"export { results };",
-				"",
-			].join("\n"),
-		);
+	it("type-checks an ESM consumer without `strict`", () => {
+		expectCommand(typecheck("types-esm.mts"), "");
+	});
 
-		const args = [
-			tsc,
-			"--noEmit",
-			"--strict",
-			"--module",
-			"nodenext",
-			"--moduleResolution",
-			"nodenext",
-			"types-check.mts",
-		];
-
-		expectCommand(run(process.execPath, args, { cwd: consumerDir }), "");
+	it("type-checks a CommonJS consumer", () => {
+		expectCommand(typecheck("types-cjs.cts"), "");
 	});
 });
