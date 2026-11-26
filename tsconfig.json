@@ -9,7 +9,6 @@
 		"sourceMap": true,
 
 		"lib": ["ESNext", "DOM"],
-		"baseUrl": ".",
 
 		"allowSyntheticDefaultImports": true,
 		"alwaysStrict": true,

@@ -36,7 +36,7 @@
 		"minify:es6": "for file in $(find dist_es6 -name '*.js'); do terser \"$file\" -c -m --source-map \"content='${file}.map',url='$(basename ${file}).map'\" -o \"$file\"; done",
 		"test": "pnpm lint:all && jest && jest -c jest-node.config.json && pnpm test:deno",
 		"test:coverage": "jest --coverage",
-		"test:deno": "command -v deno >/dev/null 2>&1 && (deno test --config tsconfig-deno.json || exit 1) || (echo '\nℹ️  \u001b[33mDeno is not installed. Skipping Deno tests.\u001b[0m' && exit 0)",
+		"test:deno": "if command -v deno >/dev/null 2>&1; then deno test --config tsconfig-deno.json; else echo '\n\u001b[33mℹ️  Deno is not installed. Skipping Deno tests.\u001b[0m'; fi",
 		"tsc:check": "tsc --noEmit",
 		"lint": "eslint .",
 		"lint:md": "markdownlint \"**/*.md\" --fix",
