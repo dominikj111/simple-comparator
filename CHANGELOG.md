@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.5] - 2026-11-26
+
+### Fixed
+
+    - Fixed type-checking in consumers without `strict`: the types entry pointed at TypeScript source, so
+      consumers compiled the library's own files with their own compiler flags and hit
+      `TS2578: Unused '@ts-expect-error' directive`
+
+### Changed
+
+    - Both builds now emit `.d.ts` declarations and the `types` conditions point at them;
+      `index.ts` / `index.cts` are no longer published
+
+### Improved
+
+    - Packaging test now covers a non-strict ESM consumer and a CommonJS consumer, alongside the strict case
+
 ## [1.2.4] - 2026-11-26
 
 ### Fixed
