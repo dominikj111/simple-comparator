@@ -2,7 +2,7 @@
 	"name": "simple-comparator",
 	"version": "1.2.3",
 	"description": "A production-ready deep equality comparison library for JavaScript and TypeScript, supporting complex objects, arrays, and primitive types with circular reference detection. Works seamlessly across Node.js, Deno, and browser environments.",
-	"main": "dist_commonjs/index.cjs",
+	"main": "dist_commonjs/index.js",
 	"module": "dist_es6/index.js",
 	"types": "./index.ts",
 	"type": "module",
@@ -11,11 +11,11 @@
 			"types": "./index.ts",
 			"import": {
 				"types": "./index.ts",
-				"default": "./index.ts"
+				"default": "./dist_es6/index.js"
 			},
 			"require": {
 				"types": "./index.cts",
-				"default": "./dist_commonjs/index.cjs"
+				"default": "./dist_commonjs/index.js"
 			}
 		}
 	},
@@ -29,11 +29,10 @@
 		"mod.ts"
 	],
 	"scripts": {
-		"build": "rm -rf dist_commonjs/* dist_es6/* && tsc --project tsconfig-commonjs.json && tsc --project tsconfig-es6.json && pnpm minify:all && pnpm rename-cjs && pnpm fix-maps",
-		"rename-cjs": "find dist_commonjs -name '*.js' -exec sh -c 'mv \"$1\" \"${1%.js}.cjs\"' _ {} \\;",
-		"fix-maps": "find dist_commonjs -name '*.map' -exec sh -c 'mv \"$1\" \"${1%.js.map}.cjs.map\"' _ {} \\;",
+		"build": "rm -rf dist_commonjs/* dist_es6/* && tsc --project tsconfig-commonjs.json && tsc --project tsconfig-es6.json && pnpm minify:all && pnpm mark:commonjs",
+		"mark:commonjs": "echo '{\"type\":\"commonjs\"}' > dist_commonjs/package.json",
 		"minify:all": "pnpm minify:commonjs && pnpm minify:es6",
-		"minify:commonjs": "for file in $(find dist_commonjs -name '*.js'); do terser \"$file\" -c -m --source-map \"content='${file}.map',url='$(basename ${file%.*}).cjs.map'\" -o \"$file\"; done",
+		"minify:commonjs": "for file in $(find dist_commonjs -name '*.js'); do terser \"$file\" -c -m --source-map \"content='${file}.map',url='$(basename ${file}).map'\" -o \"$file\"; done",
 		"minify:es6": "for file in $(find dist_es6 -name '*.js'); do terser \"$file\" -c -m --source-map \"content='${file}.map',url='$(basename ${file}).map'\" -o \"$file\"; done",
 		"test": "pnpm lint:all && jest && jest -c jest-node.config.json && pnpm test:deno",
 		"test:coverage": "jest --coverage",
